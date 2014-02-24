@@ -31,7 +31,13 @@ __“Making best code, through better developers”__
 
 <h2 id="2">Objetivo del entrenamiento</h2>
 
-* 
+* Desarrollar aplicaciones web con Spring
+* Conocer la filosofía del desarrollo web con Spring
+* Crear componentes altamente reusables y sustentables
+* Implementar los tipos de vistas más usadas en una aplicación
+* Conocer la arquitectura de SpringMVC
+* Aprovechar el conocimiento de IoC y DI, la implementación de servicios y repositorios
+* Conocer el diseño de aplicaciones Web de tres capas
 
 <h2 id="3">Consideraciones</h2>
 
@@ -52,9 +58,11 @@ Es importante contar con los siguientes elementos instalados:
     * Tener un navegador con herramientas de desarrollo
         * Chrome
         * Firefox
-    * Tener Maven 2 bien instalado
+    * Tener Gradle bien instalado
+    * MySQL como manejador de base de datos
 * Opcionales:
     * Algún otro IDE
         * Netbeans
         * IntelliJ IDEA
     * Un editor de textos
+    * Tener Maven 2 bien instalado
