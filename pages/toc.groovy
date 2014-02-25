@@ -5,11 +5,13 @@
   "presentacion.html#4"(title: "Herramientas para entrenamiento")
 }
 
-"essentials.html"(title: "Elementos esenciales del MVC")
+"essentials.html"(title: "Elementos esenciales del MVC"){
+  "essentials.html"(title: "FrontController")
+}
 
 "architecture.html"(title: "Arquitectura de las aplicaciones Spring MVC"){
-  "architecture.html"(title: "Ciclo de vida del request")
   "architecture.html"(title: "El DispatcherServlet")
+  "architecture.html"(title: "Ciclo de vida del request")  
   "architecture.html"(title: "Elementos esenciales de SpringMVC"){
     "architecture.html"(title: "HandlerMapping")
     "architecture.html"(title: "ViewResolver")

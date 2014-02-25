@@ -55,5 +55,5 @@ Hay varias estrategias para implementar un Front Controller:
 * Filter Controller Strategy
 
 <blockquote>
-  <p>El patróon Front Controller define un sólo componente que es responsable del procesamiento de las solicitudes a la aplicación. Centraliza las funciones como la selección de vistas, la seguridad y el manejo de plantillas, además de aplicarlo consistentemente a lo largo de todas las vistas o vistas. Consecuentemente, cuando el comportamiento de dichas funciones necesita cambiar, solamente una pequeña parte de la aplicación necesita ser cambiada, que podrías ser el controller o las clases de ayuda.</p>
+  <p>El patrón <code>FrontController</code> define un sólo componente que es responsable del procesamiento de las solicitudes a la aplicación. Centraliza las funciones como la selección de vistas, la seguridad y el manejo de plantillas, además de aplicarlo consistentemente a lo largo de todas las vistas o vistas. Consecuentemente, cuando el comportamiento de dichas funciones necesita cambiar, solamente una pequeña parte de la aplicación necesita ser cambiada, que podrías ser el controller o las clases de ayuda.</p>
 </blockquote>
