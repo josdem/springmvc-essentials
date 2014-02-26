@@ -41,35 +41,106 @@ La resolución de vistas de Spring es extremadamente flexible. Un `Controller` e
   <div class="col-md-12">
     <h4><i class="icon-code"></i> web.xml</h4>
     <script type="syntaxhighlighter" class="brush: xml;"><![CDATA[
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0">
 
+  <servlet>
+    <servlet-name>trackbox</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>trackbox</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <!--
+    Deshabilita en el contenedor de Servlet el manejo de archivo de
+    bienvenida. Necesario para la compatibilidad con Servlet 3.0 y Tomcat
+    7.0
+  -->
+  <welcome-file-list>
+    <welcome-file></welcome-file>
+  </welcome-file-list>
+
+</web-app>
+    ]]></script>
+  </div>
+</div>
+
+### Servlet 3.0
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> MyWebApplicationInitializer.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica1;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+
+import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
+
+public class MyWebApplicationInitializer implements WebApplicationInitializer {
+
+  @Override
+  public void onStartup(ServletContext servletContext) throws ServletException {
+    XmlWebApplicationContext appContext = new XmlWebApplicationContext();
+    appContext.setConfigLocation("/WEB-INF/spring/dispatcher-config.xml");
+
+    ServletRegistration.Dynamic registration = servletContext.addServlet("dispatcher", new DispatcherServlet(appContext));
+    registration.setLoadOnStartup(1);
+    registration.addMapping("/");
+  }
+
+}
     ]]></script>
   </div>
 </div>
 
 * `DispatcherServlet` es un simple Servlet que hereda de HttpServlet y por lo tanto hay que definirla en el descriptor web.xml
-* Cada DispatcherServlet tiene su propio ApplicationContext, a este se le denomina WebApplicationContext
-* El WebAppCtx va a contener la configuración de los elementos para que SpringMVC funcione
-* El WebAppCtx va a poder usar los beans(Repositories, Services, etc.) que se declararon en el contexto de la aplicación
-* Tras la inicialización del DS, por convención el framework busca por un archivo con la notación: `{nombre_del_servlet}-servlet.xml`
-* Que se debe de ubicar dentro del directorio WEB-INF de la aplicación
+* Cada `DispatcherServlet` tiene su propio `ApplicationContext`, a este se le denomina `WebApplicationContext`
+* Tras la inicialización del `DispatcherServlet`, por convención el framework busca por un archivo con la notación: `{nombre_del_servlet}-servlet.xml`, que se debe de ubicar dentro del directorio WEB-INF de la aplicación
 * Este archivo contiene todos los Beans de configuración del MVC
-* Adicionalmente, podemos cambiar la ubicación de este archivo
+* El `DispatcherServlet` cuenta con las siguientes propiedades:
+    * `contextClass` - Clase que implementa el **WebAppCtx**, usada por el Servlet. Default: XmlWebApplicationContext
+    * `contextConfigLocation` - Indica donde se puede encontrar la configuración del Servle
+    * `namespace` - Namespace del **WebAppCtx**. Default: {nombre-del-servlet}-servlet
+
+<div class="bs-callout bs-callout-info">
+<h4><i class="icon-coffee"></i> Información de utilidad</h4>
+  <p>
+    Te recomendamos profundizar en <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html">la documentación del Dispatcher Servlet de Spring</a>, así conocerás de forma más detallada cuál es el alcance de la configuración que puedes hacer.
+  </p>
+</div>
+
+<div class="alert alert-success">
+  <strong><i class="icon-thumbs-up"></i> Hey!</strong> Recuerda la convención dle nombre del archivo de configuración de Spring con respecto al nombre del Servlet.
+</div>
 
 ## Elementos esenciales de SpringMVC
 
+### WebApplicationContext
 
-WebApplicationContext **
+* Es una extensión del `ApplicationContext` de Spring con características adicionales para aplicaciones Web
+* Se diferencia por que es capaz de resolver temas y conoce el Servlet con el que esta asociado
+* El **WebAppCtx** va a contener la configuración de los elementos para que SpringMVC funcione
+* El **WebAppCtx** va a poder usar los beans(Repositories, Services, etc.) que se declararon en el contexto de la aplicación
 
-Es una extensión del AppCtx de Spring con características adicionales para aplicaciones Web
-Se diferencia por que es capaz de resolver temas y conoce el Servlet con el que esta asociado
+![alt dispatcher_servlet](http://docs.spring.io/spring/docs/4.0.1.RELEASE/spring-framework-reference/html/images/mvc-contexts.gif "dispatcher_servlet")
 
-    Controllers
-    Handler Mappings
-    View Resolvers
-    Locale Resolvers
-    Theme Resolver
-    Multipart file resolver
-    Handler Exception Resolver
+* Controllers
+* Handler Mappings
+* View Resolvers
+* Locale Resolvers
+* Theme Resolver
+* Multipart file resolver
+* Handler Exception Resolver
 
 ## Ciclo de vida del request
 
