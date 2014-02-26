@@ -10,13 +10,9 @@
 }
 
 "architecture.html"(title: "Arquitectura de las aplicaciones Spring MVC"){
-  "architecture.html"(title: "El DispatcherServlet")
-  "architecture.html"(title: "Ciclo de vida del request")  
-  "architecture.html"(title: "Elementos esenciales de SpringMVC"){
-    "architecture.html"(title: "HandlerMapping")
-    "architecture.html"(title: "ViewResolver")
-    "architecture.html"(title: "Handler Interceptors")
-  }
+  "architecture.html"(title: "DispatcherServlet")
+  "architecture.html"(title: "Elementos esenciales de SpringMVC")
+  "architecture.html"(title: "Ciclo de vida del request")
 }
 
 "configuration.html"(title: "Configuración esencial de SpringMVC"){

@@ -136,13 +136,14 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 
 Los componentes de un `WebApplicationContext` son:
 
-* Controllers
-* Handler Mappings
-* View Resolvers
-* Locale Resolvers
-* Theme Resolver
-* Multipart file resolver
-* Handler Exception Resolver
+* HandlerMapping - Mapea los request de entrada a manejadores y una lista de preo y post procesadores. La implementación más popular soporta controladores anotados pero también existen otras implementaciones.
+* HandlerAdapter - Ayuda al `DispatcherServlet` a invocar al controlador asignado a la petición.
+* ViewResolver - Resuelve nombres de vistas lógicas basados en String a tipos de `View`
+* LocaleResolver y LocaleContextResolver - Resuelve la localización del cliente usandolo y posiblemente su zona horario, en orden para ofrecer vistas internacionalizadas.
+* ThemeResolver - Resuelve los temas que la aplicación web puede usar para ofrecer layouts personalizados.
+* MultipartResolver - Parsea los request del tipo multi-part para procesar el soporte del uploads de archivos en las formas HTML
+* HandlerExceptionResolver - Mapea excepciones a vistas, además de permitir código con manejo más elaborado para tratarlas.
+* FlashMapManager - Almacena y entrega la entrada y salida de una variable `FlashMap` que puede ser usado para pasar atributos de un request a otro, usualmente en un redirect.
 
 ## Ciclo de vida del request
 
