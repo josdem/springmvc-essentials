@@ -132,7 +132,7 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 * El **WebAppCtx** va a contener la configuración de los elementos para que SpringMVC funcione
 * El **WebAppCtx** va a poder usar los beans(Repositories, Services, etc.) que se declararon en el contexto de la aplicación
 
-![alt dispatcher_servlet](http://docs.spring.io/spring/docs/4.0.1.RELEASE/spring-framework-reference/html/images/mvc-contexts.gif "dispatcher_servlet")
+![alt dispatcher_servlet](/img/webappctx.png "dispatcher_servlet")
 
 Los componentes de un `WebApplicationContext` son:
 
