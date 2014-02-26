@@ -134,6 +134,8 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 
 ![alt dispatcher_servlet](http://docs.spring.io/spring/docs/4.0.1.RELEASE/spring-framework-reference/html/images/mvc-contexts.gif "dispatcher_servlet")
 
+Los componentes de un `WebApplicationContext` son:
+
 * Controllers
 * Handler Mappings
 * View Resolvers
@@ -145,3 +147,10 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 ## Ciclo de vida del request
 
 ![alt lifecycle_request](/img/lifecycle_request.png "lifecycle_request")
+
+<div class="bs-callout bs-callout-info">
+<h4><i class="icon-coffee"></i> Información de utilidad</h4>
+  <p>
+    Te recomendamos que también veas <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/context/support/AnnotationConfigWebApplicationContext.html">la documentación del AnnotationConfigWebApplicationContext</a>, podrás conocer otra forma de configurar una aplicación basada en anotaciones de Spring. Además de la interfaz <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html">WebApplicationInitializer</a> que tiene información de utilidad.
+  </p>
+</div>
