@@ -21,6 +21,7 @@
 }
 
 "views_controllers.html"(title: "Vistas y controllers"){
+  "views_controllers.html"(title: "ContextLoaderListener")
   "views_controllers.html"(title: "Declaración de controllers")
   "views_controllers.html"(title: "Uso de @RequestMapping y URI Templates"){
     "views_controllers.html"(title: "Captura de parámetros - @RequestParam")
@@ -38,6 +39,7 @@
 }
 
 "customize.html"(title:"Internacionalización y temas"){
+  "customize.html"(title:"Interceptores")
   "customize.html"(title:"Internacionalización: LocaleResolver y LocaleChangeInterceptor")
   "customize.html"(title:"Decoración: ThemeResolver y ThemeChangeInterceptor")
   "customize.html"(title:"Diseño visual transversal")
