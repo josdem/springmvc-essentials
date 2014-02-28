@@ -116,4 +116,127 @@ public class ProjectController {
 
 Cuando un controller regresa una view de nombre _currentView_, entonces el `ViewResolver` buscará por: __/WEB-INF/jsp/currentView.jsp__
 
+## Implementación de FormController
+
+**JSP & JSTL**
+
+* Cuando usamos JSTL necesitamos una clase especial de vista(JstlView), y ésta es preparada previamente
+* Spring provee para las views de una librería que ayuda a facilitar el binding de objetos de un formulario, entre algunas funcionalidades más
+* Cada tag provee un conjunto de atributos correspondientes al tipo de elemento para no dejar de lado la funcionalidad
+* Solo hay que agregar la taglib al encabezado de la View: `<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>`
+
+**TagLib `spring-form.tld`**
+
+* `checkbox`
+* `checkboxes`
+* `errors`
+* `form`
+* `hidden`
+* `input`
+* `label`
+* `option`
+* `options`
+* `password`
+* `radiobutton`
+* `radiobuttons`
+* `select`
+* `textarea`
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> ProjectController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica2;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.makingdevs.model.Project;
+import com.makingdevs.repositories.ProjectRepository;
+import com.makingdevs.services.ProjectService;
+
+@Controller
+public class ProjectController {
+  
+  @Autowired
+  ProjectRepository projectRepository;
+  
+  @Autowired
+  ProjectService projectService;
+
+  @RequestMapping("/project")
+  public String allProjects(Model model) {
+    model.addAttribute("message", "Welcome to projects manager!");
+    model.addAttribute("projects",projectRepository.findAll());
+    return "project/list";
+  }
+  
+  @RequestMapping(value="/newProject",method=RequestMethod.GET)
+  public String createNewProject(Model model) {
+    Project project = new Project();
+    model.addAttribute(project);
+    return "project/new";
+  }
+  
+  @RequestMapping(value="/saveProject",method=RequestMethod.POST)
+  public String saveProject(Project project) {
+    projectService.createNewProject(project);
+    return "redirect:/project";
+  }
+  
+}
+    ]]></script>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> project/list.jsp</h4>
+    <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!-- document body -->
+<div class="container">
+  <h1>${message}</h1>
+</div>
+
+<div class="container">
+  <ul>
+  <c:forEach items="${projects}" var="project" >
+    <li>${project.codeName}</li>
+  </c:forEach>
+  </ul>
+  <hr>
+  <a href="${pageContext.request.contextPath}/newProject" class="btn btn-primary">
+    Create a new project
+  </a>
+</div>
+    ]]></script>
+  </div>
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> project/new.jsp</h4>
+    <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<!-- document body -->
+<form:form commandName="project" method="post" action="${pageContext.request.contextPath}/saveProject">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <form:input path="name" htmlEscape="true" placeholder="New project" class="form-control"/>
+  </div>
+  <div class="form-group">
+    <label for="codeName">Code Name</label>
+    <form:input path="codeName" htmlEscape="true" placeholder="PROJECT-CODE" class="form-control"/>
+  </div>
+  <div class="form-group">
+    <label for="description">Description</label>
+    <form:textarea path="description" htmlEscape="true" class="form-control" rows="3"/>
+  </div>          
+  <button type="submit" class="btn btn-default">Create a new project</button>
+</form:form>
+    ]]></script>
+  </div>
+</div>
 

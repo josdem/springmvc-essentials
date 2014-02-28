@@ -41,6 +41,28 @@ No hay ventajas entre configuraciones, sólo gustos y preferencias.
 
 Lo anterior registra varios beans, un `RequestMappingHandlerMapping`, un `RequestMappingHandlerAdapter` y un `ExceptionHandlerExceptionResolver` con el soporte de procesar los requests con métodos de controladores anotados con `@RequestMapping`, `@ExceptionHandler`, y otros más.
 
+#### Protip
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> file.properties</h4>
+    <script type="syntaxhighlighter" class="brush: plain;"><![CDATA[
+application.version=1.0.0
+    ]]></script>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> trackbox-servlet.xml</h4>
+    <script type="syntaxhighlighter" class="brush: xml;"><![CDATA[
+<util:properties id="applicationProps" location="/WEB-INF/spring/application.properties"/>
+
+<mvc:resources mapping="/resources-#{applicationProps[application.version]}/**" location="/public-resources/"/>
+    ]]></script>
+  </div>
+</div>
+
 ## Uso del MVC Java Config
 
 <div class="row">
