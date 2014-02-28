@@ -18,10 +18,10 @@
 "configuration.html"(title: "Configuración esencial de SpringMVC"){
   "configuration.html"(title: "Uso del namespace MVC de SpringMVC")
   "configuration.html"(title: "Uso del MVC Java Config")
+  "configuration.html"(title: "ContextLoaderListener")
 }
 
 "views_controllers.html"(title: "Vistas y controllers"){
-  "views_controllers.html"(title: "ContextLoaderListener")
   "views_controllers.html"(title: "Declaración de controllers")
   "views_controllers.html"(title: "Uso de @RequestMapping y URI Templates"){
     "views_controllers.html"(title: "Captura de parámetros - @RequestParam")
