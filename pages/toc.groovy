@@ -21,21 +21,21 @@
   "configuration.html"(title: "ContextLoaderListener")
 }
 
-"views_controllers.html"(title: "Vistas y controllers"){
-  "views_controllers.html"(title: "Declaración de controllers")
+"functionality.md"(title: "Funcionalidad a desarrollar")
+
+"views_controllers.html"(title: "Vistas y Controllers"){
+  "views_controllers.html"(title:"Declaración de controllers")
+  "views_controllers.html"(title:"Implementación de FormController")
+  "views_controllers.html"(title:"Tags de Spring MVC")
+  "views_controllers.html"(title:"Validaciones")
+  "views_controllers.html"(title:"URI Templates")
+  "views_controllers.html"(title:"Elementos en sesión - @SessionAttributes")
+  "views_controllers.html"(title:"Uso de @InitBinder")
+  "views_controllers.html"(title:"Upload de archivos(MultipartResolver)")
   "views_controllers.html"(title: "Uso de @RequestMapping y URI Templates"){
     "views_controllers.html"(title: "Captura de parámetros - @RequestParam")
     "views_controllers.html"(title: "Modelos y atributos - @ModelAttribute")
   }
-}
-
-"forms.html"(title:"Manejo de formularios"){
-  "forms.html"(title:"Implementación de FormController")
-  "forms.html"(title:"Tags de Spring MVC")
-  "forms.html"(title:"Validaciones")
-  "forms.html"(title: "Elementos en sesión - @SessionAttributes")
-  "forms.html"(title:"Uso de @InitBinder")
-  "forms.html"(title:"Upload de archivos(MultipartResolver)")
 }
 
 "customize.html"(title:"Internacionalización y temas"){
