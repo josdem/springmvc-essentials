@@ -349,13 +349,12 @@ Los tipos de retorno que pueden regresar los métodos firmados con `@RequestMapp
 El hecho de que no exista la necesidad de especificar una vista de forma explícita es gracias a `@ModelAttribute` y `RequestToViewNameTranslator`
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <h4><i class="icon-code"></i> ExplorerController.java</h4>
     <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
 package com.makingdevs.practica4;
 
 // A lot of imports
-
 
 @Controller
 @RequestMapping("/explorer")
@@ -406,6 +405,143 @@ public class ExplorerController {
     return "helloWorld";
   }
 }
+    ]]></script>
+  </div>
+</div>
+
+## Captura de parámetros - `@RequestParam`
+
+* Lo usamos para ligar parámetros del request a un parámetro del método en el controller
+* Son requeridos por default, pero podemos cambiar el comportamiento con el atributo `required=false`
+* Estos parámetros pueden ser recibidos a través de _GET_ o de _POST_, con la respectiva formación de envío
+
+### `@CookieValue`
+
+Ata un parámetro del método al valor HTTP de la cookie
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> SearchController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica5;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.makingdevs.model.Task;
+import com.makingdevs.model.UserStory;
+import com.makingdevs.repositories.TaskRepository;
+import com.makingdevs.repositories.UserStoryRepository;
+
+@Controller
+@RequestMapping(value = "/search/**")
+public class SearchController {
+
+  private Log log = LogFactory.getLog(SearchController.class);
+
+  @Autowired
+  UserStoryRepository userStoryRepository;
+
+  @Autowired
+  TaskRepository taskRepository;
+
+  @RequestMapping(method = RequestMethod.GET)
+  public String searchInProjects(HttpServletResponse response, @CookieValue(value = "queryCounter", defaultValue = "0") Integer queryCounter) {
+    queryCounter++;
+    log.debug("This is the " + queryCounter + " time!");
+    Cookie cookie = new Cookie("queryCounter", queryCounter.toString());
+    response.addCookie(cookie);
+    return "search";
+  }
+
+  @RequestMapping(method = RequestMethod.POST)
+  public Map<String, Object> searchResults(@RequestParam("minValue") Integer minValue,
+      @RequestParam("maxValue") Integer maxValue, @RequestParam("taskDescription") String taskDescription) {
+    Map<String, Object> model = new HashMap<String, Object>();
+    List<UserStory> userStories = userStoryRepository.findAllByEffortBetween(minValue, maxValue);
+    List<Task> tasks = taskRepository.findAllByDescriptionLike("%" + taskDescription + "%");
+    model.put("minValue", minValue);
+    model.put("maxValue", maxValue);
+    model.put("taskDescription", taskDescription);
+    model.put("userStories", userStories);
+    model.put("tasks", tasks);
+    return model;
+  }
+}
+    ]]></script>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> search.jsp</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+<div class="container">
+  <h1>Search in projects</h1>
+</div>
+
+<div class="container">
+  <form action="${pageContext.request.contextPath}/search" method="post">
+    <div class="form-group">
+      <label for="name">User Story effort</label>
+      <!-- Hey ma! Help me to set the selected value -->
+      <select class="form-control" name="minValue">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+      And
+      <select class="form-control" name="maxValue">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="name">Task description</label>
+      <input name="taskDescription" placeholder="What did you write?" class="form-control" value="${taskDescription}">
+    </div>
+    <button type="submit" class="btn btn-primery">Search in projects</button>
+  </form>
+</div>
+<hr>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <h3>UserStories <small>${minValue} and ${maxValue}</small></h3>
+      <ul>
+      <c:forEach items="${userStories}" var="us">
+        <li>${us.effort} - ${us.description}</li>
+      </c:forEach>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h3>Tasks <small>${taskDescription}</small></h3>
+      <ul>
+      <c:forEach items="${tasks}" var="task">
+        <li>${task.description}</li>
+      </c:forEach>
+      </ul> 
+    </div>
+  </div>
+</div>
     ]]></script>
   </div>
 </div>
