@@ -24,7 +24,7 @@
 * Mapea un URL a una clase específica o a un método manejador en particular
 * Típicamente la anotación a nivel de clase mapea a un controlador para formularios, complementándolas con anotaciones a nivel de método indicando un método específico HTTP(GET/POST) o parámetros específicos HTTP 
 * Está anotación no es requerida a nivel de clase 
-    * Los paths pasan de ser relativos a absolutos
+    * Los paths pasan de ser absolutos a relativos
 * Soporta Ant paths
 
 <div class="row">
@@ -125,7 +125,7 @@ Cuando un controller regresa una view de nombre _currentView_, entonces el `View
 * Cada tag provee un conjunto de atributos correspondientes al tipo de elemento para no dejar de lado la funcionalidad
 * Solo hay que agregar la taglib al encabezado de la View: `<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>`
 
-**TagLib `spring-form.tld`**
+### Tags de Spring MVC
 
 * `checkbox`
 * `checkboxes`
@@ -153,6 +153,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.makingdevs.model.Project;
 import com.makingdevs.repositories.ProjectRepository;
@@ -174,17 +175,15 @@ public class ProjectController {
     return "project/list";
   }
   
-  @RequestMapping(value="/newProject",method=RequestMethod.GET)
-  public String createNewProject(Model model) {
-    Project project = new Project();
-    model.addAttribute(project);
-    return "project/new";
+  @RequestMapping(value="/project/new",method=RequestMethod.GET)
+  public Project createNewProject() {
+    return new Project();
   }
   
   @RequestMapping(value="/saveProject",method=RequestMethod.POST)
-  public String saveProject(Project project) {
+  public ModelAndView saveProject(Project project) {
     projectService.createNewProject(project);
-    return "redirect:/project";
+    return new ModelAndView("redirect:/project");
   }
   
 }
@@ -209,8 +208,8 @@ public class ProjectController {
   </c:forEach>
   </ul>
   <hr>
-  <a href="${pageContext.request.contextPath}/newProject" class="btn btn-primary">
-    Create a new project
+  <a href="${pageContext.request.contextPath}/project/new" class="btn btn-primary">
+      Create a new project
   </a>
 </div>
     ]]></script>
@@ -240,3 +239,173 @@ public class ProjectController {
   </div>
 </div>
 
+## URI Templates y MultiActionControllers
+
+Los _URI templates_ pueden ser usados para acceder convenientemente a partes selectas de una URL en un método anotado con `@RequestMapping`.
+
+Un _URI template_ es un String en forma de URI, conteniendo uno o más nombres de variables. Cuando se sustituye los valores en esas variables, el template llega a ser una URI. 
+
+En SpringMVC podemos usar la anotación `@PathVariable` sobre el argumento de un método para atar el valor de la variable del _URI template_.
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> ProjectController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica3;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.makingdevs.model.UserStory;
+import com.makingdevs.services.UserStoryService;
+
+@Controller
+public class UserStoryController {
+
+  @Autowired
+  UserStoryService userStoryService;
+
+  @RequestMapping("/project/{codeName}/userStories")
+  public String allProjects(@PathVariable("codeName") String codeName, Model model) {
+    List<UserStory> userStories = userStoryService.findUserStoriesByProject(codeName);
+    model.addAttribute("project",userStories.get(0).getProject());
+    // Hey ma! help me to validate..
+    model.addAttribute("userStories",userStories);
+    return "userStory/project";
+  }
+
+}
+// You must add @ComponentScan(basePackages = { "com.makingdevs.practica3" })
+// or <context:component-scan base-package="com.makingdevs.practica3"/>
+// depending on your configuration
+    ]]></script>
+  </div>
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> ProjectController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!-- html body -->
+<div class="container">
+  <h1>UserStories of ${project.codeName}</h1>
+</div>
+
+<div class="container">
+  <ul>
+    <c:forEach items="${userStories}" var="us" >
+      <li>${us.description}</li>
+    </c:forEach>
+  </ul>
+  <hr>
+  <a href="#" class="btn btn-primary">
+    Create a new user story
+  </a>
+</div>
+    ]]></script>
+  </div>
+</div>
+
+Recuerda agregar el link hacia el controller `<a href="${pageContext.request.contextPath}/project/${project.codeName}/userStories">${project.codeName}</a>` en la vista de lista de Projects.
+
+<div class="bs-callout bs-callout-info">
+<h4><span class="glyphicon glyphicon-thumbs-up"></span> Es tu turno:</h4>
+Implementa el controller para ver los elementos Task que le corresponden a un User Story. Además, la implementación de la creación de nuevas historias de usuario es más trivial, te recomendamos hacerla para ejercitar el uso de formas en los controladores.
+</div>
+
+## Métodos manejadores anotados con `@RequestMapping`
+
+Un método manejador anotado con `@RequestMapping` puede tener firmas flexibles. La mayoría de los argumentos puede ser usados en orden arbitrario con la única excepción de `BindingResults`.
+
+Los objetos que pueden ir firmados como argumentos en un método con `@RequestMapping` son:
+
+* `HttpServletRequest` / `HttpServletResponse`
+* `HttpSession`
+* `org.springframework.web.context.request.WebRequest` / `org.springframework.web.context.request.NativeWebRequest` ( Parámetros Génericos)
+* `java.util.Locale`
+* `java.io.InputStream` / `java.io.Reader`
+* `java.io.OutputStream` / `java.io.Writer`
+* `@PathVariable` + variable
+* `@RequestParam` + parámetro
+* `@RequestHeader` + Asignación
+* `java.util.Map` / `org.springframework.ui.Model` / `org.springframework.ui.ModelMap`
+* Command u objetos de formulario para atar parámetros(`@InitBinder`)
+* `org.springframework.validation.Errors` / `org.springframework.validation.BindingResult`
+* `org.springframework.web.bind.support.SessionStatus`(`@SessionAttributes`)* 
+
+Los tipos de retorno que pueden regresar los métodos firmados con `@RequestMapping` son:
+
+* `ModelAndView`
+* `Model`
+* `Map`
+* `View`
+* `String`
+* `void`
+* Cualquier objeto que sea considerado un atributo del modelo a ser expuesto por una vista
+
+El hecho de que no exista la necesidad de especificar una vista de forma explícita es gracias a `@ModelAttribute` y `RequestToViewNameTranslator`
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> ExplorerController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica4;
+
+// A lot of imports
+
+
+@Controller
+@RequestMapping("/explorer")
+public class ExplorerController {
+
+  private Log log = LogFactory.getLog(ExplorerController.class);
+
+  @RequestMapping("/requestAndResponse")
+  public void explorarRequestAndResponse(HttpServletRequest request, HttpServletResponse response) {
+    log.debug("\nRequest:\t" + ToStringBuilder.reflectionToString(request));
+    log.debug("\nResponse:\t" + ToStringBuilder.reflectionToString(response));
+  }
+
+  @RequestMapping("/session")
+  public String explorarSession(HttpSession session) {
+    log.debug("\nSession:\t" + ToStringBuilder.reflectionToString(session));
+    return "helloWorld";
+  }
+
+  @RequestMapping("/logout")
+  public String logout(HttpSession session) {
+    log.debug("\nSession:\t" + ToStringBuilder.reflectionToString(session));
+    session.invalidate();
+    return "helloWorld";
+  }
+
+  @RequestMapping("localeAndStream")
+  public Map<String, Object> explorarLocaleAndStream(Locale locale, Reader reader, Writer writer) throws IOException {
+    log.debug("\nLocale:\t" + ToStringBuilder.reflectionToString(locale));
+    log.debug("\nInputStream:\t" + ToStringBuilder.reflectionToString(reader));
+    log.debug("\nOutputStream:\t" + ToStringBuilder.reflectionToString(writer));
+    return new HashMap<String, Object>();
+  }
+
+  @RequestMapping(value = "/commandErrors", method = RequestMethod.GET)
+  public Model explorarCommandErrorsSessionStatus(ModelMap modelMap) {
+    Model model = new ExtendedModelMap();
+    model.addAttribute(new Task());
+    log.debug("\nModel:\t" + ToStringBuilder.reflectionToString(model));
+    log.debug("\nModelMap:\t" + ToStringBuilder.reflectionToString(modelMap));
+    return model;
+  }
+
+  @RequestMapping(value = "/commandErrors", method = RequestMethod.POST)
+  public String explorarCommandErrorsSessionStatus(Task task, Errors errors) {
+    log.debug("\nObjeto:\t" + ToStringBuilder.reflectionToString(task));
+    log.debug("\nErrors:\t" + ToStringBuilder.reflectionToString(errors));
+    return "helloWorld";
+  }
+}
+    ]]></script>
+  </div>
+</div>

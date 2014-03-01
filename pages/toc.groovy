@@ -25,17 +25,17 @@
 
 "views_controllers.html"(title: "Vistas y Controllers"){
   "views_controllers.html"(title:"Declaración de controllers")
-  "views_controllers.html"(title:"Implementación de FormController")
-  "views_controllers.html"(title:"Tags de Spring MVC")
+  "views_controllers.html"(title: "URI Templates y MultiActionControllers")
+  "views_controllers.html"(title:"Implementación de FormController"){
+    "views_controllers.html"(title:"Tags de Spring MVC")  
+  }
+  "views_controllers.html"(title:"Métodos manejadores anotados con `@RequestMapping`")
+  "views_controllers.html"(title: "Captura de parámetros - @RequestParam")
+  "views_controllers.html"(title: "Modelos y atributos - @ModelAttribute")
   "views_controllers.html"(title:"Validaciones")
-  "views_controllers.html"(title:"URI Templates")
   "views_controllers.html"(title:"Elementos en sesión - @SessionAttributes")
   "views_controllers.html"(title:"Uso de @InitBinder")
   "views_controllers.html"(title:"Upload de archivos(MultipartResolver)")
-  "views_controllers.html"(title: "Uso de @RequestMapping y URI Templates"){
-    "views_controllers.html"(title: "Captura de parámetros - @RequestParam")
-    "views_controllers.html"(title: "Modelos y atributos - @ModelAttribute")
-  }
 }
 
 "customize.html"(title:"Internacionalización y temas"){
