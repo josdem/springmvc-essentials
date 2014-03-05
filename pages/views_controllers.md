@@ -545,3 +545,170 @@ public class SearchController {
     ]]></script>
   </div>
 </div>
+
+## Validaciones en formularios
+
+El DataBinding es útil para permitir que la entrada del usuario sea dinámicamente atado a un modelo de dominio de una aplicación, o cualquier objeto que usemos para procesarlo. El `Validator` y el `DataBinder` son fundamentales en el paquete `validation`.
+
+### Validando usando la interface `Validator`
+
+Spring cuenta con la interfaz `Validation` que se puede utilizar para validar los objetos, la cual, trabaja con el objeto `Errors` mientras se valida, de tal manera que se pueden alimentar de datos a dicho objeto.
+
+Proveeremos del comportamiento de validación implementando los métodos de la interfaz `org.springframework.validation.Validator`:
+
+* `supports(Class)` - Puede esta clase validar a los objetos que se le indiquen?
+* `validate(Object, org.springframework.validation.Errors)` - Validar el objeto dado y en caso de errores, entonces los registra dentro de `Errors`
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> ProjectValidator.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica6;
+
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+
+import com.makingdevs.model.Project;
+
+public class ProjectValidator implements Validator {
+
+  @Override
+  public boolean supports(Class<?> clazz) {
+    return Project.class.equals(clazz);
+  }
+
+  @Override
+  public void validate(Object object, Errors errors) {
+    Project project = (Project) object;
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "name.empty","The name is required");
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "codeName", "codename.empty","The code name is required");
+    if(project.getCodeName().length() >= 20)
+      errors.rejectValue("codeName", "codename.toolong", "The code name is too long");
+  }
+
+}
+    ]]></script>
+  </div>
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> ProjectValidationController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica6;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.makingdevs.model.Project;
+import com.makingdevs.repositories.ProjectRepository;
+import com.makingdevs.services.ProjectService;
+
+@Controller
+public class ProjectValidationController {
+
+  @Autowired
+  ProjectRepository projectRepository;
+
+  @Autowired
+  ProjectService projectService;
+
+  @RequestMapping("/project")
+  public String allProjects(Model model) {
+    model.addAttribute("message", "Welcome to projects manager!");
+    model.addAttribute("projects", projectRepository.findAll());
+    return "project/list";
+  }
+
+  @RequestMapping(value = "/project/new", method = RequestMethod.GET)
+  public Project createNewProject() {
+    return new Project();
+  }
+
+  @RequestMapping(value = "/saveProject", method = RequestMethod.POST)
+  public ModelAndView saveProject(@Validated Project project, BindingResult binding) {
+    if (binding.hasErrors()) {
+      ModelAndView mv = new ModelAndView("project/new");
+      mv.getModel().put("project", project);
+      return mv;
+    } else {
+      projectService.createNewProject(project);
+      return new ModelAndView("redirect:/project");
+    }
+  }
+
+  @InitBinder
+  public void initBinder(WebDataBinder binder) {
+    binder.addValidators(new ProjectValidator());
+  }
+
+}
+// You must add @ComponentScan(basePackages = { "com.makingdevs.practica6" })
+// or <context:component-scan base-package="com.makingdevs.practica6"/>
+// and remove the package scan com.makingdevs.practica2
+    ]]></script>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> ProjectValidator.java</h4>
+    <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<!-- More head content -->
+<div class="container">
+  <div class="row">
+    <div class="page-header">
+      <h1>Create a new project</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+
+      <form:form commandName="project" method="post" action="${pageContext.request.contextPath}/saveProject">
+        
+        <div class="form-group">
+          <label class="control-label" for="name">Name</label>
+          <form:input path="name" htmlEscape="true" placeholder="New project" class="form-control"/>
+          <span class="control-label">${status.errorCode}</span>
+          <form:errors path="name" element="span"/>
+        </div>
+        
+        
+        <div class="form-group">
+          <label class="control-label" for="codeName">Code Name</label>
+          <form:input path="codeName" htmlEscape="true" placeholder="PROJECT-CODE" class="form-control"/>
+          <span class="control-label">${status.errorCode}</span>
+          <form:errors path="codeName" element="span"/>
+        </div>
+        
+        <div class="form-group">
+          <label class="control-label" for="description">Description</label>
+          <form:textarea path="description" htmlEscape="true" class="form-control" rows="3"/>
+          <span class="control-label">${status.errorCode}</span>
+          <form:errors path="description" element="span"/>
+        </div>
+          
+        <button type="submit" class="btn btn-default">Create a new project</button>
+      </form:form>
+
+    </div>
+  </div>
+</div>
+    ]]></script>
+  </div>
+</div>
+
+Recuerda que puedes usar las anotaciones de _JSR-303_ para ejecutar la validación con `@Valid`
+
+### Validando con el JSR-303
+
+### Resolving codes to error messages
