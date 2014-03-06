@@ -33,7 +33,7 @@
   "views_controllers.html"(title: "Captura de parámetros - @RequestParam")
   "views_controllers.html"(title:"Validaciones")
   "views_controllers.html"(title:"Personalizando el paso de datos con @InitBinder")
-  "views_controllers.html"(title: "Modelos y atributos - @ModelAttribute")
+  "views_controllers.html"(title:"Modelos y atributos - @ModelAttribute")
   "views_controllers.html"(title:"Elementos en sesión - @SessionAttributes")
   "views_controllers.html"(title:"Upload de archivos(MultipartResolver)")
 }

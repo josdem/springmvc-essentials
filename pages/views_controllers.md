@@ -997,7 +997,103 @@ Dichos métodos de init-binder soportan todos los argumentos del `@RequestMappin
 
 ## Modelos y atributos - @ModelAttribute
 
+La anotación `@modelAttribute` puede ser usada en métodos o en argumentos de los métodos.
 
+<blockquote>
+  <p>Un método anotado con <code>@ModelAttribute</code> indica que el propósito de tal es agregar uno más atributos al modelo.</p>
+</blockquote>
+
+Tales métodos son compatibles con los mismos tipos de argumentos como los de `@RequestMapping`, pero no se pueden asignar directamente a las solicitudes. En lugar de ello, los métodos anotados con `@ModelAttribute` son invocados antes de los métodos con `@RequestMapping` dentro del mismo controller.
+
+Los métodos con `@ModelAttribute` se utilizan para rellenar el modelo con atributos comúnmente necesarios, por ejemplo para rellenar una lista desplegable con los estados o con los tipos de catálogos, o para recuperar un objeto de comando con el fin de utilizarlo para representar los datos de un formulario HTML. 
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> SprintModelAttributeController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica9;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.makingdevs.model.Project;
+import com.makingdevs.practica8.SprintCommand;
+import com.makingdevs.repositories.ProjectRepository;
+import com.makingdevs.services.SprintService;
+
+@Controller
+@RequestMapping("/sprint/")
+public class SprintModelAttributeController {
+
+  private Log log = LogFactory.getLog(SprintModelAttributeController.class);
+
+  @Autowired
+  ProjectRepository projectRepository;
+
+  @Autowired
+  SprintService sprintService;
+
+  @ModelAttribute
+  public List<Project> allProjects() {
+    log.debug("Obtaining projects");
+    List<Project> projectList = new ArrayList<Project>();
+    Iterator<Project> iterator = projectRepository.findAll().iterator();
+    while(iterator.hasNext())
+      projectList.add(iterator.next());
+    return projectList;
+  }
+
+  @RequestMapping(value = { "/new", "/create" }, method = RequestMethod.GET)
+  public String crearSprint(ModelMap model) {
+    model.addAttribute("sprintCommand", new SprintCommand());
+    // Hey look ma! No more references to project list...
+    return "sprint/new";
+  }
+
+  @RequestMapping(value = { "/save", "/persist" }, method = RequestMethod.POST)
+  public String persistirSprint(@Valid SprintCommand sprintCommand, Errors errors, ModelMap model) {
+    // Hey look ma! No more references to project list...
+    if (errors.hasErrors()) {
+      model.addAttribute("sprintCommand", sprintCommand);
+      return "sprint/new";
+    } else {
+      sprintService.createSprintForOneproject(sprintCommand.getSprint());
+      return "redirect:/";
+    }
+  }
+
+  @InitBinder
+  public void initBinder(WebDataBinder binder) {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    dateFormat.setLenient(false);
+    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+  }
+
+}
+// You must add @ComponentScan(basePackages = { "com.makingdevs.practica9" })
+// or <context:component-scan base-package="com.makingdevs.practica9"/>
+// and remove the package scan com.makingdevs.practica8
+    ]]></script>
+  </div>
+</div>
 
 ## Elementos en sesión - @SessionAttributes
 
