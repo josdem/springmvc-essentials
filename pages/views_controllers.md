@@ -574,7 +574,7 @@ import com.makingdevs.model.Project;
 public class ProjectValidator implements Validator {
 
   @Override
-  public boolean supports(Class<?> clazz) {
+  public boolean supports(Class clazz) {
     return Project.class.equals(clazz);
   }
 
@@ -595,11 +595,12 @@ public class ProjectValidator implements Validator {
     <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
 package com.makingdevs.practica6;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -632,7 +633,8 @@ public class ProjectValidationController {
   }
 
   @RequestMapping(value = "/saveProject", method = RequestMethod.POST)
-  public ModelAndView saveProject(@Validated Project project, BindingResult binding) {
+  //public ModelAndView saveProject(@Validated Project project, BindingResult binding) {
+  public ModelAndView saveProject(@Valid Project project, BindingResult binding) {
     if (binding.hasErrors()) {
       ModelAndView mv = new ModelAndView("project/new");
       mv.getModel().put("project", project);
@@ -707,8 +709,300 @@ public class ProjectValidationController {
   </div>
 </div>
 
-Recuerda que puedes usar las anotaciones de _JSR-303_ para ejecutar la validación con `@Valid`
-
 ### Validando con el JSR-303
 
+Para obtener información general sobre el JSR-303, consulta el [Bean Validation Specification](https://jcp.org/en/jsr/detail?id=303). Para obtener información sobre las capacidades específicas de la implementación de referencia predeterminada, consulta la documentación de [Hibernate Validator](http://hibernate.org/validator/).
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> UserStoryCommand.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica7;
+
+// A lot of imports
+
+public class UserStoryCommand {
+  
+  private Long id;
+  
+  @NotNull
+  @Size(min = 0, max = 1000)
+  private String description;
+  
+  @Min(1)
+  @Max(99)
+  private Integer priority;
+  
+  @Range(min = 1, max = 5)
+  private Integer effort;
+  
+  private Project project;
+
+  public UserStoryCommand() {
+    super();
+    this.project = new Project();
+  }
+  
+  public UserStory getUserStory(){
+    UserStory us = new UserStory();
+    us.setId(id);
+    us.setDateCreated(new Date());
+    us.setLastUpdated(new Date());
+    us.setDescription(description);
+    us.setPriority(priority);
+    us.setEffort(effort);
+    us.setProject(project);
+    return us;
+  }
+
+  // Getters and setters
+
+}
+    ]]></script>
+  </div>
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> UserCommand.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica7;
+
+// More imports
+
+public class UserCommand {
+  private Long id;
+  @Email
+  @NotBlank
+  private String username;
+  @NotNull
+  @AssertTrue
+  private boolean enabled;
+  
+  public User getUser(){
+    User user = new User();
+    user.setId(id);
+    user.setEnabled(enabled);
+    user.setUsername(username);
+    return user;
+  }
+  
+  // Getters and setters
+  
+}
+
+    ]]></script>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> UserStoryController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+    ]]></script>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> form.jsp</h4>
+    <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+    ]]></script>
+  </div>
+</div>
+
 ### Resolving codes to error messages
+
+## Personalizando el paso de datos con `@InitBinder`
+
+Anotando los métodos del controlador con `@InitBinder` permite configurar los datos del request directamente dentro de la misma clase. `@InitBinder` identifica los métodos que inicializan el `WebDataBinder` que se utiliza para rellenar el _command_ y el objeto de la forma.
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> SprintCommand.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica8;
+
+import java.util.Date;
+
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.makingdevs.model.Project;
+import com.makingdevs.model.Sprint;
+
+public class SprintCommand {
+  private Long id;
+  @NotBlank
+  @Size(min = 1, max = 100)
+  private String name;
+  @Size(min = 0, max = 1000)
+  private String description;
+  @NotNull
+  private Date startDate;
+  @Future
+  @NotNull
+  private Date endDate;
+  @NotNull
+  private Project project;
+
+  public SprintCommand() {
+    super();
+    project = new Project();
+  }
+
+  public Sprint getSprint() {
+    Sprint sprint = new Sprint();
+    sprint.setId(id);
+    sprint.setDescription(description);
+    sprint.setEndDate(endDate);
+    sprint.setStartDate(startDate);
+    sprint.setName(name);
+    sprint.setProject(project);
+    return sprint;
+  }
+
+  // Getters and setters
+
+}
+
+    ]]></script>
+  </div>
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> SprintController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica8;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.makingdevs.repositories.ProjectRepository;
+import com.makingdevs.services.SprintService;
+
+@Controller
+@RequestMapping("/sprint/")
+public class SprintController {
+
+  @Autowired
+  ProjectRepository projectRepository;
+
+  @Autowired
+  SprintService sprintService;
+
+  @RequestMapping(value = { "/new", "/create" }, method = RequestMethod.GET)
+  public String crearSprint(ModelMap model) {
+    model.addAttribute("sprintCommand", new SprintCommand());
+    model.addAttribute(projectRepository.findAll());
+    return "sprint/new";
+  }
+
+  @RequestMapping(value = { "/save", "/persist" }, method = RequestMethod.POST)
+  public String persistirSprint(@Valid SprintCommand sprintCommand, Errors errors, ModelMap model) {
+    model.addAttribute(projectRepository.findAll()); // Wuack!!!!, this again...
+    if (errors.hasErrors()) {
+      model.addAttribute("sprintCommand", sprintCommand);
+      return "sprint/new";
+    } else {
+      sprintService.createSprintForOneproject(sprintCommand.getSprint());
+      return "redirect:/";
+    }
+  }
+}
+    ]]></script>
+  </div>
+</div>
+
+Dichos métodos de init-binder soportan todos los argumentos del `@RequestMapping`, excepto por commands y su correspondiente objeto de validación. Estos métodos no deben de regresar ningún valor, y tipicament, incluyen objetos como: `WebDataBinder`, `WebRequest` o `java.util.Locale`.
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> SprintController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+  @InitBinder
+  public void initBinder(WebDataBinder binder) {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    dateFormat.setLenient(false);
+    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+  }
+    ]]></script>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> new.jsp</h4>
+    <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+<div class="container">
+  <div class="row">
+    <div class="page-header">
+      <h1>Create a new Sprint</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+
+      <form:form commandName="sprintCommand" method="post" action="${pageContext.request.contextPath}/sprint/save">
+        
+        <div class="form-group">
+          <label class="control-label" for="name">Project</label>
+          <form:select path="project.id" items="${projectList}" itemValue="id" itemLabel="codeName" class="form-control"/>
+          <form:errors path="project" element="span"/>
+        </div>
+        
+        <div class="form-group">
+          <label class="control-label" for="name">Name</label>
+          <form:input path="name" htmlEscape="true" placeholder="New project" class="form-control"/>
+          <form:errors path="name" element="span"/>
+        </div>
+        
+        <div class="form-group">
+          <label class="control-label" for="description">Description</label>
+          <form:textarea path="description" htmlEscape="true" class="form-control" rows="3"/>
+          <form:errors path="description" element="span"/>
+        </div>
+        
+        <div class="row">
+          <div class="col-xs-6">
+            <label class="control-label" for="startDate">Start date:</label>
+            <form:input path="startDate" htmlEscape="true" placeholder="dd/mm/yyyy" class="form-control"/>
+            <form:errors path="startDate" element="span"/>
+          </div>
+          <div class="col-xs-6">
+            <label class="control-label" for="endDate">End date:</label>
+            <form:input path="endDate" htmlEscape="true" placeholder="dd/mm/yyyy" class="form-control"/>
+            <form:errors path="endDate" element="span"/>
+          </div>
+        </div>
+        <hr>
+        <button type="submit" class="btn btn-primary">Create a new project</button>
+      </form:form>
+    </div>
+  </div>
+</div>
+    ]]></script>
+  </div>
+</div>
+
+## Modelos y atributos - @ModelAttribute
+
+
+
+## Elementos en sesión - @SessionAttributes
+
+
+
+## Upload de archivos(MultipartResolver)
+
+
