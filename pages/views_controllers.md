@@ -997,7 +997,7 @@ Dichos métodos de init-binder soportan todos los argumentos del `@RequestMappin
 
 ## Modelos y atributos - @ModelAttribute
 
-La anotación `@modelAttribute` puede ser usada en métodos o en argumentos de los métodos.
+La anotación `@ModelAttribute` puede ser usada en métodos o en argumentos de los métodos.
 
 <blockquote>
   <p>Un método anotado con <code>@ModelAttribute</code> indica que el propósito de tal es agregar uno más atributos al modelo.</p>
@@ -1092,12 +1092,158 @@ public class SprintModelAttributeController {
 // or <context:component-scan base-package="com.makingdevs.practica9"/>
 // and remove the package scan com.makingdevs.practica8
     ]]></script>
-  </div>
+  </div> 
 </div>
 
-## Elementos en sesión - @SessionAttributes
+Un argumento de un método con `@ModelAttribute` indica que el argumento debería entregarlo del modelo. Si no esta presente en el modelo, los argumentos deberían ser instanciados primero y luego agregado al modelo. Una vez presente en el modelo, los campos de los argumentos deberán ser poblados de todos los parámetros del request que coinciden con los nombres. 
 
+¿Cómo se podrían poblar las instancias anotadas con `@ModelAttribute`?
 
+* Tal vez el modelo ya se encuentre en uso por `@SessionAttributes`
+* A lo mejor reside en el modelo debido a un método con `@ModelAttribute` en el mismo controlador
+* Quizña sea entregado basada en una variable del URI template y un tipo de converter
+* Quizá sea instanciado usando el constructor por default
+
+Un método con `@ModelAttribute` es una forma común de entregar un atributo de la base de datos, la cual quizá sea opcionalmente almacenado entre solicitudes a través del uso de `@SessionAttributes`.
+
+## Elementos en sesión - `@SessionAttributes`
+
+La anotación `@SessionAttributes` declara atributos de sesión que son usados por un manejador específico. Esto tipicamente listará los nombres de los atributos del modelo los cuales son transparentemente almacenados en la sesión o algún almacenamiento de conversación, sirviendo como beans de formularios entre requests subsecuentes.
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> TaskController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica10;
+
+// A lot of imports
+
+@Controller
+@RequestMapping("/project/{codeName}/userStories/{userStoryId}")
+@SessionAttributes("tasks") // Wow! What is this?
+public class TaskController {
+
+  private Log log = LogFactory.getLog(TaskController.class);
+
+  @Autowired
+  ProjectRepository projectRepository;
+
+  @Autowired
+  UserStoryRepository userStoryRepository;
+
+  @ModelAttribute
+  public Project currentProject(@PathVariable("codeName") String codeName) {
+    return projectRepository.findByCodeName(codeName);
+  }
+
+  @ModelAttribute
+  public UserStory currentUserStory(@PathVariable("userStoryId") Long userStoryId) {
+    return userStoryRepository.findOne(userStoryId);
+  }
+
+  @ModelAttribute
+  public void taskStatus(Map<String, Object> map) {
+    map.put("taskStatusList", TaskStatus.values());
+  }
+
+  @ModelAttribute
+  public void tasksForThisUserStory(Model model) {
+    // Hey, validate if the userStory has tasks ...
+    // Hey, validate the current user story ...
+    if (!model.containsAttribute("tasks")) {
+      model.addAttribute("tasks", new Vector<Task>());
+    }
+  }
+
+  @RequestMapping(value = "/task", method = RequestMethod.GET)
+  public String newTask(ModelMap model) {
+    Task task = new Task();
+    model.addAttribute("task", task);
+    return "task/new";
+  }
+
+  @RequestMapping(value = "/task", method = RequestMethod.POST)
+  public String newTask(@ModelAttribute("tasks") Vector<Task> tasks, Task task, BindingResult result) {
+    tasks.add(task);
+    return "redirect:task";
+  }
+
+  @RequestMapping("/saveTasks")
+  public ModelAndView createTasksForThisUserStory(@ModelAttribute("project") Project project, SessionStatus status) {
+    // Hey ma!!! Let me save the list...
+    status.setComplete(); // Hey look ma! I finish the current session with the objects
+    return new ModelAndView("redirect:/project/" +project.getCodeName()+"/userStories");
+  }
+}
+// Hey you know what tod do...
+    ]]></script>
+  </div> 
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> task/new.jsp</h4>
+    <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+<div class="container">
+  <div class="row">
+    <div class="container">
+      <h1>${project.codeName}</h1>
+      <h2>${userStory.description}</h2>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-6">
+      
+      <form:form commandName="task" method="post" action="${pageContext.request.contextPath}/project/${project.codeName}/userStories/${userStory.id}/task">
+        <fieldset>
+        <legend>Create a new task</legend>
+        
+        <div class="form-group">
+          <label class="control-label" for="name">Status</label>
+          <form:select path="status" items="${taskStatusList}" class="form-control"/>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label" for="description">Description</label>
+          <form:textarea path="description" htmlEscape="true" class="form-control" rows="3"/>
+          <form:errors path="description" element="span"/>
+        </div>
+
+        <hr>
+        <button type="submit" class="btn btn-primary">Create a new task</button>
+        <a href="${pageContext.request.contextPath}/project/${project.codeName}/userStories/${userStory.id}/saveTasks" class="btn btn-success">Confirm all tasks</a>
+        </fieldset>
+      </form:form>
+      
+    </div>
+    <div class="col-md-6">
+      <h3>Task list</h3>
+      <ul>
+        <c:forEach items="${tasks}" var="task">
+          <li>
+            <c:choose>
+              <c:when test="${task.status == 'TODO'}">
+                <span class="label label-info">TODO</span>
+              </c:when>
+              <c:when test="${task.status == 'WIP'}">
+                <span class="label label-primary">WIP</span>
+              </c:when>
+              <c:when test="${task.status == 'DONE'}">
+                <span class="label label-success">DONE</span>
+              </c:when>
+            </c:choose>
+             - ${task.description}
+          </li>
+        </c:forEach>
+      </ul>
+    </div>
+  </div>
+  
+</div>
+    ]]></script>
+  </div> 
+</div>
 
 ## Upload de archivos(MultipartResolver)
 
