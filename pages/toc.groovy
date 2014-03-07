@@ -38,16 +38,15 @@
   "views_controllers.html"(title:"Upload de archivos(MultipartResolver)")
 }
 
-"customize.html"(title:"Internacionalización y temas"){
+"customize.html"(title:"Mejorando la aplicación"){
   "customize.html"(title:"Interceptores")
   "customize.html"(title:"Internacionalización: LocaleResolver y LocaleChangeInterceptor")
   "customize.html"(title:"Decoración: ThemeResolver y ThemeChangeInterceptor")
   "customize.html"(title:"Diseño visual transversal")
-}
-
-"exceptions.html"(title:"Manejo de errores en la aplicación"){
-  "exceptions.html"(title:"Por Contrroller(@ExceptionResolver)")
-  "exceptions.html"(title:"Uso del HandlerExceptionResolver")
+  "customize.html"(title:"Manejo de errores en la aplicación"){
+    "customize.html"(title:"Por Contrroller(@ExceptionResolver)")
+    "customize.html"(title:"Uso del HandlerExceptionResolver")
+  }
 }
 
 "views.html"(title:"Generación de otras vistas"){

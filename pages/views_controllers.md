@@ -1106,7 +1106,7 @@ Un argumento de un método con `@ModelAttribute` indica que el argumento deberí
 
 Un método con `@ModelAttribute` es una forma común de entregar un atributo de la base de datos, la cual quizá sea opcionalmente almacenado entre solicitudes a través del uso de `@SessionAttributes`.
 
-## Elementos en sesión - `@SessionAttributes`
+## Elementos en sesión más sencillos con `@SessionAttributes`
 
 La anotación `@SessionAttributes` declara atributos de sesión que son usados por un manejador específico. Esto tipicamente listará los nombres de los atributos del modelo los cuales son transparentemente almacenados en la sesión o algún almacenamiento de conversación, sirviendo como beans de formularios entre requests subsecuentes.
 
@@ -1247,4 +1247,137 @@ public class TaskController {
 
 ## Upload de archivos(MultipartResolver)
 
+Spring tiene soporte integrado para el upload de archivos en aplicaciones web. Para habilitarlo debemos usar un `MultipartResolver`. La cuál, Spring provee en implementaciones de Commons File Upload y otra con ayuda de Servlet 3.0.
 
+Por default Spring no tiene habilitado tal soporte. Debemos habilitarlo con un bean dentro del `ApplicationContext`, con ello, cada request es inspeccionado para ver si contiene un _multipart_, si no lo encuentra continua normal, pero si lo tiene entonces `MultipartReolver` entra en acción. 
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> Using commons-fileupload.jar</h4>
+    <script type="syntaxhighlighter" class="brush: xml;"><![CDATA[
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="maxUploadSize" value="100000"/>
+</bean>
+    ]]></script>
+  </div> 
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> Using Servlet 3.0</h4>
+    <script type="syntaxhighlighter" class="brush: xml;"><![CDATA[
+<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+</bean>
+    ]]></script>
+  </div> 
+</div>
+
+Para usar Servlet 3.0 debes de marcar el `DispatcherServlet` con la correspondiente sección de `multipart-config`, según el caso que estés configurando.
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> FileUploadController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica11;
+
+import java.io.IOException;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+@Controller
+public class FileUploadController {
+  
+  private Log log = LogFactory.getLog(FileUploadController.class);
+
+  @RequestMapping(value = "/fileUpload", method = RequestMethod.GET)
+  public void showFileUploadForm() {
+  }
+
+  @RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
+  public String handleFormUpload(@RequestParam("file") MultipartFile file) throws IOException {
+    log.debug(ToStringBuilder.reflectionToString(file));
+    if (!file.isEmpty()) {
+      log.debug("Retrieving bytes...");
+      byte[] bytes = file.getBytes();
+      log.debug(bytes);
+      return "redirect:uploadSuccess";
+    }
+
+    return "redirect:uploadFailure";
+  }
+}
+    ]]></script>
+  </div> 
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> fileUpload.jsp</h4>
+    <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+  <div class="container">
+    <h1>Upload an image for your project</h1>
+  </div>
+
+  <div class="container">
+    <form action="${pageContext.request.contextPath}/fileUpload" method="post" enctype="multipart/form-data" >
+      <input type="file" name="file" title="Search for a file to add">
+      <hr>
+      <button type="submit" class="btn btn-primery">Upload the file</button>
+    </form>
+  </div>
+  <hr>
+  
+  <script src="${pageContext.request.contextPath}/static/bootstrap-file-input/bootstrap.file-input.js"/>
+
+    ]]></script>
+  </div> 
+</div>
+
+```
+$(document).ready(function(){
+  $('input[type=file]').bootstrapFileInput();
+});
+```
+
+<div class="bs-callout bs-callout-info">
+<h4><i class="icon-coffee"></i> Información de utilidad</h4>
+  <p>
+    Estamos usando un plugin de Twitter Bootstrap sólo para decorar el botón de upload: <a href="http://gregpike.net/demos/bootstrap-file-input/demo.html">Twitter Bootstrap File Input</a>
+  </a>
+  </p>
+</div>
+
+## El objeto del modelo ModelMap
+
+La clase `ModelMap` es esencialmente un `Map` glorificado que puede agregar objetos que son desplegados en una vista, y pueden ser adheridos por una convención común.
+
+La clase `ModelAndView` usa una clase `ModelMap` que es la implementación de un `Map` personalizado que automáticamente genera el key para un objeto cuando se le agrega. La estrategia para determinar el nombre de un objeto agregado es, en caso de un objeto escalar como `Task`, se usa el nombre de la clase como nombre del objeto en minúsculas y con notación de camello, y en caso de ser una lista o arreglo de objetos se sujija con la palabra _List_. Ejemplos:
+
+* Task => task
+* UserStory => userStgory
+* Project[] => projectList
+* User[] => userList
+
+------
+
+### Algunos temas que no se tocan en este entrenamiento pero que pueden ser tomados de forma independiente para crear mejores aplicaciones:
+
+* El uso del FlashMapManager
+* Matrices de variables
+* Media Types consumibles y producibles
+* Captura de Headers con `@RequestHeader`
+* Mapeo del cuerpo de la petición con `@RequestBody`
+* Respuestas con `@ResponseBody`
+* `@RestController` y `@ControllerAdvice`
+* `HttpEntity`
+* `HttpPutFormContentFilter`
+* `@ControllerAdvice`
+* Async request y Servlet 3.0
+* ETag
+* MessageConverters
+* Formatters
+* Content Negotiation
