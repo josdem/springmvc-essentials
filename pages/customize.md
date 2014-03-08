@@ -496,7 +496,7 @@ public class ErrorController {
 </div>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <h4><i class="icon-code"></i> handlerException.jsp</h4>
     <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
 <div class="container">

@@ -51,7 +51,6 @@
 
 "views.html"(title:"Generación de otras vistas"){
   "views.html"(title:"Documentos en PDF")
-  "views.html"(title:"Integración con JasperReports")
   "views.html"(title:"Documentos de Excel")
 }
 
