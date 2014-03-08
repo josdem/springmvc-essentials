@@ -315,7 +315,7 @@ En el uso de temas, el `DispatcherServlet` buscará por un bean de nombre _theme
 Y en conjunto con un `ThemeChangeInterceptor` se atrapa el request para aplicar las acciones de decoración.
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-6">
     <h4><i class="icon-code"></i> WebConfig.java</h4>
     <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
   @Bean
@@ -335,6 +335,32 @@ Y en conjunto con un `ThemeChangeInterceptor` se atrapa el request para aplicar 
     registry.addInterceptor(localeInterceptor).addPathPatterns("/");
     registry.addInterceptor(themeInterceptor).addPathPatterns("/");
   }
+    ]]></script>
+  </div> 
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> trackbox-servlet.xml</h4>
+    <script type="syntaxhighlighter" class="brush: xml;"><![CDATA[
+<bean id="themeResolver"
+  class="org.springframework.web.servlet.theme.SessionThemeResolver">
+  <property name="defaultThemeName" value="style.normal" />
+</bean>
+
+<mvc:interceptors>
+  <bean class="com.makingdevs.practica12.TimeOpeningInterceptor" />
+  <mvc:interceptor>
+    <mvc:mapping path="/*" />
+    <bean
+      class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+      <property name="paramName" value="lang" />
+    </bean>
+  </mvc:interceptor>
+  <mvc:interceptor>
+    <mvc:mapping path="/*" />
+    <bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+      <property name="paramName" value="theme" />
+    </bean>
+  </mvc:interceptor>
+</mvc:interceptors>
     ]]></script>
   </div> 
 </div>
