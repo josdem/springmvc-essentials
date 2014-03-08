@@ -401,3 +401,130 @@ Y finalmente usalos con ayuda de la taglib de spring: `<spring:theme code='css' 
 
 ## Manejo de errores en la aplicación
 
+Las implementaciones de `HandlerExceptionResolver` tratan con excepciones inesperadoas que ocurren en la ejecución de los controladores. Es encargado de reensamblar la excepción mapeada en el web.xml. Sin embargo, provee de una forma más sencilla de tratarla. 
+
+Además de la implementación de la interfaz `HandlerExceptionResolver`, al cual solo le importa la implementación del método `ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex);`, contamos con elementos como `SimpleMappingExceptionResolver` o los métodos anotados con `@ExceptionHandler`. Este último funciona sólo sobre las excepciones que pueda arrojar el controlador en el cual esté anotado.
+
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> SimpleController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+@Controller
+public class SimpleController {
+
+  // another methods...
+
+  @ExceptionHandler(IOException.class)
+  public ResponseEntity<String> handleIOException(IOException ex) {
+    // prepare responseEntity
+    return responseEntity;
+  }
+
+}    
+    ]]></script>
+  </div> 
+</div>
+
+El valor de `@ExceptionHandler` puede ser un arreglo de tipos de excepciones, que si es lanzada alguna de ellas, entonces este método anotado reaccionará.
+
+Para fines globales de nuestra aplicación implementaremos la interfaz de forma directa.
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> CustomExceptionResolver.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica13;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
+
+@Component
+public class CustomExceptionResolver implements HandlerExceptionResolver {
+
+  public ModelAndView resolveException(HttpServletRequest request,
+      HttpServletResponse response, Object handler, Exception ex) {
+    Map<String,Object> model = new HashMap<String,Object>();
+    model.put("ex", ex);
+    model.put("message", ex.getMessage());
+    return new ModelAndView("handlerException",model);
+  }
+
+}
+    ]]></script>
+  </div> 
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> ErrorController.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica13;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.makingdevs.model.Project;
+import com.makingdevs.repositories.ProjectRepository;
+import com.makingdevs.services.ProjectService;
+
+@Controller
+public class ErrorController {
+  
+  @Autowired
+  ProjectRepository projectRepository;
+  
+  @Autowired
+  ProjectService projectService;
+
+  @RequestMapping("/error")
+  public void throwError(){
+    projectService.createNewProject(new Project());
+  }
+  
+  @RequestMapping("/error/db")
+  public void throwDBError(){
+    projectRepository.save(new Project());
+  }
+}
+    ]]></script>
+  </div> 
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><i class="icon-code"></i> handlerException.jsp</h4>
+    <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+<div class="container">
+  <!-- Main component for a primary marketing message or call to action -->
+  <div class="jumbotron">
+    <h1>Wops, this feature is new!!!</h1>
+    <p>${message}</p>
+  </div>
+</div> <!-- /container -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="alert alert-danger">
+        <c:forEach items="${ex.stackTrace}" var="trace">
+          ${trace}
+        </c:forEach>
+      </div>
+    </div>
+  </div>
+</div>
+    ]]></script>
+  </div> 
+</div>
+
+<div class="bs-callout bs-callout-info">
+<h4><i class="icon-coffee"></i> Información de utilidad</h4>
+  <p>
+    Por default, Spring usa <code><a href="http://docs.spring.io/spring/docs/4.0.2.RELEASE/javadoc-api/org/springframework/web/servlet/mvc/support/DefaultHandlerExceptionResolver.html">DefaultHandlerExceptionResolver</a></code>, el cual define códigos de error 4xx y 5xx que permiten el tratamiento de los errores de la aplicación, si te ha fallado la aplicación o haz arrojado alguna excepción entonces ya lo debiste haber visto.
+  </p>
+</div>

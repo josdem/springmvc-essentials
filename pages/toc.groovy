@@ -55,6 +55,4 @@
   "views.html"(title:"Documentos de Excel")
 }
 
-"boot.html"(title:"Spring Boot")
-
 "agradecimiento.html"(title: "Agradecimiento")
