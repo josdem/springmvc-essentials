@@ -314,12 +314,64 @@ En el uso de temas, el `DispatcherServlet` buscará por un bean de nombre _theme
 
 Y en conjunto con un `ThemeChangeInterceptor` se atrapa el request para aplicar las acciones de decoración.
 
+<div class="row">
+  <div class="col-md-12">
+    <h4><i class="icon-code"></i> WebConfig.java</h4>
+    <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+  @Bean
+  public ThemeResolver themeResolver(){
+    SessionThemeResolver themeResolver = new SessionThemeResolver();
+    themeResolver.setDefaultThemeName("style.normal");
+    return themeResolver;
+  }
 
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    LocaleChangeInterceptor localeInterceptor = new LocaleChangeInterceptor();
+    localeInterceptor.setParamName("lang");
+    ThemeChangeInterceptor themeInterceptor = new ThemeChangeInterceptor();
+    themeInterceptor.setParamName("theme");
+    registry.addInterceptor(new TimeOpeningInterceptor());
+    registry.addInterceptor(localeInterceptor).addPathPatterns("/");
+    registry.addInterceptor(themeInterceptor).addPathPatterns("/");
+  }
+    ]]></script>
+  </div> 
+</div>
 
-## Diseño visual transversal
+Define los temas en los archivos de propiedades adecuados:
 
+<div class="row">
+  <div class="col-md-4">
+    <h4><i class="icon-code"></i> /style/amelia.properties</h4>
+    <script type="syntaxhighlighter" class="brush: plain;"><![CDATA[
+css=bootstrap/dist/css/amelia.bootstrap.min.css
+    ]]></script>
+  </div> 
+  <div class="col-md-4">
+    <h4><i class="icon-code"></i> /style/normal.properties</h4>
+    <script type="syntaxhighlighter" class="brush: plain;"><![CDATA[
+css=bootstrap/dist/css/bootstrap.min.css
+    ]]></script>
+  </div> 
+  <div class="col-md-4">
+    <h4><i class="icon-code"></i> /style/superhero.properties</h4>
+    <script type="syntaxhighlighter" class="brush: plain;"><![CDATA[
+css=bootstrap/dist/css/superhero.bootstrap.min.css
+    ]]></script>
+  </div> 
+</div>
 
+Y finalmente usalos con ayuda de la taglib de spring: `<spring:theme code='css' />`, por ejemplo:
+
+`<link href="${pageContext.request.contextPath}/static/<spring:theme code='css' />" rel="stylesheet">`
+
+<div class="bs-callout bs-callout-info">
+<h4><i class="icon-coffee"></i> Información de utilidad</h4>
+  <p>
+    Para complementar este tema te recomendamos un decorador de sitios de nombre <a href="http://wiki.sitemesh.org/wiki/display/sitemesh/Home">Sitemesh</a>, el cual te ayuda a concentrar todo el diseño visual de la aplicación en un sólo lugar.
+  </p>
+</div>
 
 ## Manejo de errores en la aplicación
-
 
