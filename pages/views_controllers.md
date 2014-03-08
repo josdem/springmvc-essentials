@@ -726,14 +726,16 @@ public class UserStoryCommand {
   private Long id;
   
   @NotNull
-  @Size(min = 0, max = 1000)
+  @Size(min = 1, max = 1000)
   private String description;
   
   @Min(1)
   @Max(99)
+  @NotNull
   private Integer priority;
   
   @Range(min = 1, max = 5)
+  @NotNull
   private Integer effort;
   
   private Project project;
@@ -796,19 +798,102 @@ public class UserCommand {
   <div class="col-md-12">
     <h4><i class="icon-code"></i> UserStoryController.java</h4>
     <script type="syntaxhighlighter" class="brush: java;"><![CDATA[
+package com.makingdevs.practica7;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.makingdevs.model.UserStory;
+import com.makingdevs.repositories.ProjectRepository;
+import com.makingdevs.services.UserStoryService;
+
+@Controller
+public class UserStoryController {
+
+  @Autowired
+  UserStoryService userStoryService;
+
+  @Autowired
+  ProjectRepository projectRepository;
+
+  @RequestMapping("/project/{codeName}/userStories")
+  public String userStoriesForProject(@PathVariable("codeName") String codeName, Model model) {
+    List<UserStory> userStories = userStoryService.findUserStoriesByProject(codeName);
+    if (userStories.size() == 0)
+      model.addAttribute("project", projectRepository.findByCodeName(codeName));
+    else
+      model.addAttribute("project", userStories.get(0).getProject());
+    model.addAttribute("userStories", userStories);
+    return "userStory/project";
+  }
+
+  @RequestMapping("/project/{codeName}/userStory/new")
+  public String createUserStory(@PathVariable("codeName") String codeName, ModelMap model) {
+    UserStoryCommand userStoryCommand = new UserStoryCommand();
+    userStoryCommand.setProject(projectRepository.findByCodeName(codeName));
+    model.addAttribute("userStoryCommand", userStoryCommand);
+    return "userStory/new";
+  }
+
+  @RequestMapping("/project/{codeName}/userStory/save")
+  public String saveUserStory(@PathVariable("codeName") String codeName, @Valid UserStoryCommand userStoryCommand,
+      BindingResult result, ModelMap model) {
+    if (result.hasErrors()) {
+      userStoryCommand.setProject(projectRepository.findByCodeName(codeName));
+      model.put("userStory", userStoryCommand);
+      return "userStory/new";
+    } else {
+      userStoryService.createUserStory(userStoryCommand.getUserStory());
+      return "redirect:/project/" + codeName + "/userStories";
+    }
+  }
+}
     ]]></script>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-12">
-    <h4><i class="icon-code"></i> form.jsp</h4>
+    <h4><i class="icon-code"></i> new.jsp</h4>
     <script type="syntaxhighlighter" class="brush: html;"><![CDATA[
+  <div class="container">
+    <form:form commandName="userStoryCommand" method="post"
+      action="${pageContext.request.contextPath}/project/${userStoryCommand.project.codeName}/userStory/save">
+      <div class="form-group">
+        <label for="description">Description</label>
+        <form:textarea path="description" htmlEscape="true"
+          class="form-control" rows="3" />
+        <form:errors path="description" element="span"/>
+      </div>
+      <div class="form-group">
+        <label for="priority">Priority</label>
+        <form:input path="priority" htmlEscape="true" placeholder="A number..."
+          class="form-control" />
+        <form:errors path="priority" element="span"/>
+      </div>
+      <div class="form-group">
+        <label for="effort">Effort</label>
+        <form:input path="effort" htmlEscape="true"
+          placeholder="A number between 1 and 5" class="form-control" />
+        <form:errors path="effort" element="span"/>
+      </div>
+      <form:hidden path="project.id"/>
+      <button type="submit" class="btn btn-default">Create a new
+        user story</button>
+    </form:form>
+  </div>
     ]]></script>
   </div>
 </div>
-
-### Resolving codes to error messages
 
 ## Personalizando el paso de datos con `@InitBinder`
 
@@ -1364,7 +1449,7 @@ La clase `ModelAndView` usa una clase `ModelMap` que es la implementación de un
 
 ------
 
-### Algunos temas que no se tocan en este entrenamiento pero que pueden ser tomados de forma independiente para crear mejores aplicaciones:
+### Algunos temas que no se tocan en este entrenamiento, pero que pueden ser tomados de forma independiente para crear mejores aplicaciones:
 
 * El uso del FlashMapManager
 * Matrices de variables
