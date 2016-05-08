@@ -101,3 +101,33 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 ** `namespace` - Namespace del WebAppCtx. Default: {nombre-del-servlet}-servlet
 
 TIP: Te recomendamos profundizar en la documentación del Dispatcher Servlet de Spring, así conocerás de forma más detallada cuál es el alcance de la configuración que puedes hacer.
+
+NOTE: Recuerda la convención dle nombre del archivo de configuración de Spring con respecto al nombre del Servlet.
+
+## Elementos esenciales de SpringMVC
+
+###  WebApplicationContext
+
+* Es una extensión del `ApplicationContext` de Spring con características adicionales para aplicaciones Web
+* Se diferencia por que es capaz de resolver temas y conoce el Servlet con el que esta asociado
+* El *WebAppCtx* va a contener la configuración de los elementos para que SpringMVC funcione
+* El *WebAppCtx* va a poder usar los beans(Repositories, Services, etc.) que se declararon en el contexto de la aplicación
+
+image:images/webappctx.png[]
+
+Los componentes de un `WebApplicationContext` son:
+
+* *HandlerMapping* - Mapea los request de entrada a manejadores y una lista de preo y post procesadores. La implementación más popular soporta controladores anotados pero también existen otras implementaciones.
+* *HandlerAdapter* - Ayuda al DispatcherServlet a invocar al controlador asignado a la petición.
+* *ViewResolver* - Resuelve nombres de vistas lógicas basados en String a tipos de View
+* *LocaleResolver* y LocaleContextResolver - Resuelve la localización del cliente usandolo y posiblemente su zona horario, en orden para ofrecer vistas internacionalizadas.
+* *ThemeResolver* - Resuelve los temas que la aplicación web puede usar para ofrecer layouts personalizados.
+* *MultipartResolver* - Parsea los request del tipo multi-part para procesar el soporte del uploads de archivos en las formas HTML
+* *HandlerExceptionResolver* - Mapea excepciones a vistas, además de permitir código con manejo más elaborado para tratarlas.
+* *FlashMapManager* - Almacena y entrega la entrada y salida de una variable FlashMap que puede ser usado para pasar atributos de un request a otro, usualmente en un redirect.
+
+## Ciclo de vida del request
+
+image:images/lifecycle_request.png[]
+
+Te recomendamos que también veas la documentación del link:http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/context/support/AnnotationConfigWebApplicationContext.html[AnnotationConfigWebApplicationContext], podrás conocer otra forma de configurar una aplicación basada en anotaciones de Spring. Además de la interfaz link:http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html[WebApplicationInitializer] que tiene información de utilidad.
