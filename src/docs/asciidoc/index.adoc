@@ -10,6 +10,7 @@
 include::welcome.adoc[]
 include::essentials.adoc[]
 include::architecture.adoc[]
+include::configuration.adoc[]
 include::thanks.adoc[]
 
 

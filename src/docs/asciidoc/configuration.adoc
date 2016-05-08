@@ -1,0 +1,157 @@
+
+# Configuración esencial de SpringMVC
+
+Hay dos formas de configurar SpringMVC : con Java Config y con el namespace XML.
+
+Ambos enfoques proveen configuración por default que sobreescribe la del DispatcherServlet. El objetivo es reponer la mayoría de la aplicaciones de tener de crear la misma configuración y además de proveer constructores de alto nivel para que SpringMVC sirva de un punto de comienzo simple, y requiera poco o nulo conocimiento de tal configuración.
+
+No hay ventajas entre configuraciones, sólo gustos y preferencias.
+
+## Uso del namespace MVC de SpringMVC
+
+*trackbox-servlet.java*
+[source,xml,linenums]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <mvc:annotation-driven />
+
+  <mvc:view-controller path="/" view-name="home" />
+
+  <mvc:resources location="/libs/" mapping="/static/**" />
+
+  <bean id="jspViewResolver"
+    class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass"
+      value="org.springframework.web.servlet.view.JstlView" />
+    <property name="prefix" value="/WEB-INF/jsp/" />
+    <property name="suffix" value=".jsp" />
+  </bean>
+
+</beans>
+----
+
+Lo anterior registra varios beans, un `RequestMappingHandlerMapping`, un `RequestMappingHandlerAdapter` y un `ExceptionHandlerExceptionResolver` con el soporte de procesar los requests con métodos de controladores anotados con `@RequestMapping`, `@ExceptionHandler`, y otros más.
+
+*file.properties*
+----
+application.version=1.0.0
+----
+
+*trackbox-servlet.xml*
+[source,xml,linenums]
+----
+<util:properties id="applicationProps" location="/WEB-INF/spring/application.properties"/>
+
+<mvc:resources mapping="/resources-#{applicationProps[application.version]}/**" location="/public-resources/"/>
+----
+
+## Uso del MVC Java Config
+
+*WebConfig.java*
+[source,java,linenums]
+----
+package com.makingdevs.practica1;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
+
+@Configuration
+@EnableWebMvc
+public class WebConfig extends WebMvcConfigurerAdapter {
+
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+      registry.addResourceHandler("/static/**").addResourceLocations("/libs/");
+  }
+
+  @Override
+  public void addViewControllers(ViewControllerRegistry registry) {
+      registry.addViewController("/").setViewName("home");
+  }
+
+  @Bean
+  public ViewResolver viewResolver(){
+    InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+    resolver.setViewClass(JstlView.class);
+    resolver.setPrefix("/WEB-INF/jsp/");
+    resolver.setSuffix(".jsp");
+    return resolver;
+  }
+
+}
+----
+
+*web.xml*
+[source,xml,linenums]
+----
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0">
+
+  <servlet>
+    <servlet-name>trackbox</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <init-param>
+      <param-name>contextClass</param-name>
+      <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+    </init-param>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>com.makingdevs.practica1.WebConfig</param-value>
+    </init-param>
+
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>trackbox</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <!-- Deshabilita en el contenedor de Servlet el manejo de archivo de bienvenida.
+    Necesario para la compatibilidad con Servlet 3.0 y Tomcat 7.0 -->
+  <welcome-file-list>
+    <welcome-file></welcome-file>
+  </welcome-file-list>
+
+</web-app>
+----
+
+TIP: Absolutamente, toda la configuración que puedes hacer con XML la puedes realizar con anotaciones, y viceversa. Sin embargo, la diferencia radicara en las interfaces que deberás implementar si optas por usar Java Config, pero no te preocupes, no son díficiles y están bien documentadas.
+
+## ContextLoaderListener
+
+link:http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/context/ContextLoaderListener.html[Documentación ContextLoaderListener]
+
+Uno de los conceptos expuestos por Spring en el modelo de aplicación ligero es la arquitectura por capas. Retomando la arquitectura clásica por capas, la capa web es una más de todas; sirve como punto de entrada dentro de una aplicación para delegar a objetos de servicio, cualquier otro objeto de negocio, DAO’s, etc; tales objetos existen en una capa distinta dentro de otro contexto, *¿cómo usamos y añadimos beans del contenedor de Spring dentro de nuestra aplicación?*
+
+*WebConfig.xml*
+[source,xml,linenums]
+----
+<listener>
+  <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+
+<context-param>
+  <param-name>contextConfigLocation</param-name>
+  <param-value>classpath:/**AppCtx.xml</param-value>
+</context-param>
+----
+
+Si no indicas el `contextConfigLocation`, entonces el listener buscará por un archivo ubicado en el directorio de la aplicación `WEB-INF/applicationContext.xml` que debe definir la carga de los beans de la aplicación. Una vez que los archivos son cargados al contexto, Spring crea el `WebApplicationContext` basado en las definiciones de los beans y los almacena en el `ServletContext` de la aplicación.
+
+Un aspecto importante a considerar es que, no se crean varios application context, en lugar de ello, todo se va al mismo contenedor que se esta definiendo por DispatcherServlet, y los beans del contenedor pueden ser usados entre ellos por que están dentro del mismo contexto.
+
+TIP: Si no estás usando SpringMVC y deseas usar algún otro framework o Servlet puro, este listener es el indicado, y la forma en la cual obtienes el application context es: `WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(servletContext);`
