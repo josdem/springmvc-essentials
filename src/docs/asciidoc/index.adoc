@@ -9,6 +9,7 @@
 :leveloffset: 1
 include::welcome.adoc[]
 include::essentials.adoc[]
+include::architecture.adoc[]
 include::thanks.adoc[]
 
 
