@@ -1,0 +1,8 @@
+
+# Elementos esenciales del MVC
+
+Como todas las buenas cosas que usamos hoy en día, el patrón de diseño MVC tuvo su origen en los 70’s con Smalltalk, su creador Trygve Reenskaug lo concebía en aquel entonces como:
+
+NOTE: MVC fue concebido como una solución general al problema de los usuarios que controlan un conjunto de datos grande y complejo. La parte más difícil fue dar con buenos nombres para los diferentes componentes de la arquitectura. Model-View-Editor fue el primer set. Después de largas discusiones, en particular con Adele Goldberg, terminamos con los términos del Modelo-Vista-Controlador.
+
+Trygve Reenskaug
