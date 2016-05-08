@@ -1,0 +1,252 @@
+
+# Funcionalidad a desarrollar
+
+Nuestro ejemplo estará basado en un tablero de tareas(Taskboard), el cual esta asignado a algun proyecto que a su vez tiene varias historias de usuario, dichas historias serán pobladas por las tareas. Todo este conjunto nos dará como resultado un tablero que potencialmente podrá ser visualizado en un front-end.
+
+#### Creación de proyectos
+
+[cols="1"]
+|===
+|*Como* product owner +
+*Deseo* administrar proyectos +
+*De tal manera* que pueda crearlos y visualizarlos +
+|*Criterios de aceptación:* +
+1. El proyecto debe tener un identificador único +
+2. El identificador de proyecto de estar en mayúsculas y sin espacios +
+3. Debe de tener una descripción +
+4. Esta formado de varias historias de usuario +
+5. Se deberá calcular el esfuerzo total del proyecto +
+|===
+
+#### Agregar historias de usuario
+
+[cols="1"]
+|===
+|*Como* product owner +
+*Deseo* agregar la descripción de una funcionalidad +
+*De tal manera* que pueda identificarla como una historia de usuario +
+|*Criterios de aceptación:* +
+1. Debe de tener el esfuerzo necesario en puntos +
+2. Debe tener una prioridad +
+3. Dos historias de usuario no pueden tener la misma prioridad +
+4. Debe tener una descripción +
+5. Es posible asignarle varias tareas +
+6. Cuando todas sus tareas están terminadas entonces se considera hecho +
+7. Se puede repriorizar una historia de usuario. +
+|===
+
+#### Crear tareas
+
+[cols="1"]
+|===
+|*Como* miembro del equipo +
+*Deseo* agregar tareas +
+*De tal manera* que puedan ser parte de una historia de usuario +
+|*Criterios de aceptación:* +
+1. Las tareas pueden tener tres estados: TODO, WIP y DONE +
+2. Una tarea puede estar asignada a varios usuarios +
+3. Tienen una descripción +
+4. Pueden cambiar de estado +
+5. Un usuario sólo puede tener una tarea en WIP +
+6. Cuando se crea una tarea debe de tener el estado TODO +
+7. Sólo se pueden asignar tareas a usuarios dentro del proyecto +
+|===
+
+#### Agregar miembros al equipo
+
+[cols="1"]
+|===
+|*Como* miembro del equipo +
+*Deseo* unirme al equipo +
+*De tal manera* que agregar tareas y colaborar en un proyecto +
+|*Criterios de aceptación:* +
+1. Los nombres de usuario deben ser únicos +
+2. El nombre de usuario debe tener la forma de un correo
+|===
+
+#### Visualizar un tablero de tareas
+
+[cols="1"]
+|===
+|*Como* miembro del equipo +
+*Deseo* un tablero con las tareas de una proyecto +
+*De tal manera* que pueda visualizar el estado actual del proyecto
+|*Criterios de aceptación:* +
+1. Debe de tener 3 líneas +
+2. Las tareas deben mostrar el nombre de los participantes
+|===
+
+#### Tu propia historia...
+
+[cols=""1]
+|===
+|*Como* un usuario +
+*Deseo* hacer algo +
+*De tal manera* que me aporte valor
+|*Criterios de aceptación:* +
+1. Satisfacción +
+2. Validación +
+3. Restricción y/o valor
+|===
+
+## Estructura de las clases de dominio
+
+*Project.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+import java.util.Date;
+import java.util.List;
+
+public class Project {
+  private Long id;
+  private String name;
+  private String codeName;
+  private String description;
+  private Date dateCreated;
+  private Date lastUpdated;
+
+  private List<UserStory> userStories;
+  private List<User> participants;
+
+  // Getters y Setters
+  // Constructores
+}
+----
+
+*UserStory.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+import java.util.Date;
+import java.util.List;
+
+public class UserStory {
+  private Long id;
+  private String description;
+  private Integer priority;
+  private Integer effort;
+  private Date dateCreated;
+  private Date lastUpdated;
+
+  private Project project;
+  private List<Task> tasks;
+  // Getters y Setters
+  // Constructores
+}
+----
+
+*Task.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+import java.util.Date;
+import java.util.List;
+
+public class Task {
+  private Long id;
+  private String description;
+  private TaskStatus status;
+  private Date dateCreated;
+  private Date lastUpdated;
+
+  private UserStory userStory;
+  private List<User> participants;
+  // Getters y Setters
+  // Constructores
+}
+----
+
+*TaskStatus.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+public enum TaskStatus {
+  TODO,WIP,DONE;
+}
+----
+
+*User.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+import java.util.Date;
+
+public class User {
+  private Long id;
+  private String username;
+  private Date dateCreated;
+  private Date lastUpdated;
+  // Getters y Setters
+  // Constructores
+}
+----
+
+## Funcionalidad que deseamos implementar a nivel de interfaces
+
+*ProjectService.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+public interface ProjectService {
+  void createNewProject(Project project);
+  Project findProjectByCodeName(String codeName);
+  Integer totalEffortForProject(String codeName);
+}
+----
+
+*UserStoryService.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+import java.util.List;
+
+public interface UserStoryService {
+  void createUserStory(UserStory userStory);
+  List<UserStory> findUserStoriesByProject(String codeName);
+  boolean isUserStoryDone(Long userStoryId);
+  UserStory findUserStoryByIdentifier(Long userStoryId);
+}
+----
+
+*TaskService.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+public interface TaskService {
+  Task createTaskForUserStory(String taskDescription, Long userStoryId);
+  void assignTaskToUser(Long taskId, String username);
+  void changeTaskStatus(Long taskId, TaskStatus taskStatus);
+}
+----
+
+*UserService.java*
+
+[source,java,linenums]
+----
+package com.makingdevs.container;
+
+public interface UserService {
+  User findUserByUsername(String username);
+  User createUser(String username);
+  void addToProject(String username, String codeName);
+}
+----
+
+TIP: Aunque esta es la funcionalidad de negocio que deseamos implementar, debes recordar que aún necesitarás otros componentes que te permitan almacenar los datos de la estructura; tales componentes podrían implementarse con acceso a datos(relacionales o no relacionales) y sus respectivas abstracciones.
