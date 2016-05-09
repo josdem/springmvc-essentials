@@ -12,6 +12,8 @@ include::essentials.adoc[]
 include::architecture.adoc[]
 include::configuration.adoc[]
 include::functionality.adoc[]
+include::views_controllers.adoc[]
+include::customize.adoc[]
 include::thanks.adoc[]
 
 
