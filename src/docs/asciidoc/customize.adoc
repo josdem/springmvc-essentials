@@ -104,7 +104,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 </mvc:interceptors>
 ----
 
-### Internacionalización: LocaleResolver y LocaleChangeInterceptor
+## Internacionalización: LocaleResolver y LocaleChangeInterceptor
 
 La mayoría de los componentes de Spring soportan internacionalización, tal como lo hace también el MVC. El `DispatcherServlet` habilita automáticamente la resolución de mensajes usando la ubicación del cliente. Esto es hecho con los objetos `LocaleResolvers`, y hay varios tipos:
 
@@ -240,7 +240,7 @@ typeMismatch.java.util.Date=La date est incorrect
 
 TIP: Te recomendamos checar de nuevo tus formularios, en donde validas con JSR-303 y revisar la link:http://beanvalidation.org/1.0/spec/#standard-resolver-messages[documentación de dichos mensajes]
 
-### Decoración: ThemeResolver y ThemeChangeInterceptor
+## Decoración: ThemeResolver y ThemeChangeInterceptor
 
 Puedes aplicar temas a SpringMVC para establecer el look and feel de toda la aplicación. Un tema es una colección de recursos estáticos, tipicamente hojas de estilos e imagénes, que afectan el estilo visual de la aplicación.
 
@@ -348,7 +348,7 @@ Y finalmente usalos con ayuda de la taglib de spring: `<spring:theme code='css' 
 
 TIP: Para complementar este tema te recomendamos un decorador de sitios de nombre link:http://wiki.sitemesh.org/wiki/display/sitemesh/Home[Sitemesh], el cual te ayuda a concentrar todo el diseño visual de la aplicación en un sólo lugar.
 
-### Manejo de errores en la aplicación
+## Manejo de errores en la aplicación
 Las implementaciones de `HandlerExceptionResolver` tratan con excepciones inesperadoas que ocurren en la ejecución de los controladores. Es encargado de reensamblar la excepción mapeada en el web.xml. Sin embargo, provee de una forma más sencilla de tratarla.
 
 Además de la implementación de la interfaz `HandlerExceptionResolver`, al cual solo le importa la implementación del método `ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex);`, contamos con elementos como `SimpleMappingExceptionResolver` o los métodos anotados con `@ExceptionHandler`. Este último funciona sólo sobre las excepciones que pueda arrojar el controlador en el cual esté anotado.

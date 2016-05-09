@@ -3,7 +3,7 @@
 
 Nuestro ejemplo estará basado en un tablero de tareas(Taskboard), el cual esta asignado a algun proyecto que a su vez tiene varias historias de usuario, dichas historias serán pobladas por las tareas. Todo este conjunto nos dará como resultado un tablero que potencialmente podrá ser visualizado en un front-end.
 
-#### Creación de proyectos
+*Creación de proyectos*
 
 [cols="1"]
 |===
@@ -18,7 +18,7 @@ Nuestro ejemplo estará basado en un tablero de tareas(Taskboard), el cual esta 
 5. Se deberá calcular el esfuerzo total del proyecto +
 |===
 
-#### Agregar historias de usuario
+*Agregar historias de usuario*
 
 [cols="1"]
 |===
@@ -35,7 +35,7 @@ Nuestro ejemplo estará basado en un tablero de tareas(Taskboard), el cual esta 
 7. Se puede repriorizar una historia de usuario. +
 |===
 
-#### Crear tareas
+*Crear tareas*
 
 [cols="1"]
 |===
@@ -52,7 +52,7 @@ Nuestro ejemplo estará basado en un tablero de tareas(Taskboard), el cual esta 
 7. Sólo se pueden asignar tareas a usuarios dentro del proyecto +
 |===
 
-#### Agregar miembros al equipo
+*Agregar miembros al equipo*
 
 [cols="1"]
 |===
@@ -64,7 +64,7 @@ Nuestro ejemplo estará basado en un tablero de tareas(Taskboard), el cual esta 
 2. El nombre de usuario debe tener la forma de un correo
 |===
 
-#### Visualizar un tablero de tareas
+*Visualizar un tablero de tareas*
 
 [cols="1"]
 |===
@@ -76,7 +76,7 @@ Nuestro ejemplo estará basado en un tablero de tareas(Taskboard), el cual esta 
 2. Las tareas deben mostrar el nombre de los participantes
 |===
 
-#### Tu propia historia...
+*Tu propia historia...*
 
 [cols=""1]
 |===

@@ -14,6 +14,7 @@ include::configuration.adoc[]
 include::functionality.adoc[]
 include::views_controllers.adoc[]
 include::customize.adoc[]
+include::views.adoc[]
 include::thanks.adoc[]
 
 
