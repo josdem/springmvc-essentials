@@ -47,7 +47,7 @@ public BeanNameViewResolver beanNameViewResolver() {
 }
 ----
 
-* UserStoryExcelView.java*
+*UserStoryExcelView.java*
 [source,java,linenums]
 ----
 package com.makingdevs.practica14;

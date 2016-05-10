@@ -515,7 +515,7 @@ Spring cuenta con la interfaz `Validation` que se puede utilizar para validar lo
 
 Proveeremos del comportamiento de validación implementando los métodos de la interfaz `org.springframework.validation.Validator`
 
-* `supports(Class)` - Puede esta clase validar a los objetos que se le indiquen?
+* `supports(Class)` - ¿Puede esta clase validar a los objetos que se le indiquen?
 * `validate(Object, org.springframework.validation.Errors)` - Validar el objeto dado y en caso de errores, entonces los registra dentro de `Errors`
 
 *ProjectValidator.java*
@@ -1111,9 +1111,9 @@ Un argumento de un método con `@ModelAttribute` indica que el argumento deberí
 
 ¿Cómo se podrían poblar las instancias anotadas con `@ModelAttribute`?
 
-Tal vez el modelo ya se encuentre en uso por `@SessionAttributes`
+* Tal vez el modelo ya se encuentre en uso por `@SessionAttributes`
 * A lo mejor reside en el modelo debido a un método con `@ModelAttribute` en el mismo controlador
-* Quizña sea entregado basada en una variable del URI template y un tipo de converter
+* Quizá sea entregado basada en una variable del URI template y un tipo de converter
 * Quizá sea instanciado usando el constructor por default
 
 Un método con `@ModelAttribute` es una forma común de entregar un atributo de la base de datos, la cual quizá sea opcionalmente almacenado entre solicitudes a través del uso de `@SessionAttributes`.
