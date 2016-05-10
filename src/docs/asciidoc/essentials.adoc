@@ -9,7 +9,7 @@ Hoy en día, hay varias implementaciones de tal patrón, y variaciones como Mode
 
 Según link:http://www.oreilly.com/pub/au/155[Robert Eckstein] describe los tres elementos del MVC como sigue:
 
-* *Model* - Representa los datos y las reglas que gobiernan el acceso y actualizaciones a dichos datos. En el software empresarial, un modelo a menudo sirve como una aprocimación de software a un proceso de la vida real.
+* *Model* - Representa los datos y las reglas que gobiernan el acceso y actualizaciones a dichos datos. En el software empresarial, un modelo a menudo sirve como una aproximación de software a un proceso de la vida real.
 * *View* - La vista renderiza el contenido de un modelo. Específica exactamente como los datos del modelo deben ser presentados. Si los datos del modelo cambian, entonces la vista debe actualizar la presentación en cuanto sea necesario. Esto puede ser mantenido con un modelo push, en el cual las vistas se registran con el modelo para notificación de cambios, o un modelo pull, en el cual la vista es responsable de llamar el modelo cuando necesite entregar los datos actuales.
 * *Controller* - El controller traduce las interacciones del usuario con la vista dentro de las acciones que el modelo realiza. Las interacciones del usuario pueden ser clicks de botón o selecciones de menú. las cuales causarían(hablando de una aplicación web) solicitudes HTTP GET y POST. Dependiendo del contexto, un controller quizá seleccione una nueva vista, para ser presentada al usuario.
 
@@ -30,7 +30,7 @@ El uso de un controller como el punto inicial de contacto para el manejo de una 
 
 El controller provee de un punto centralizado que controla y administra el manejo de solicitudes Web. Centralizando los puntos de decisión y control, el controller además ayuda a reducir la cantidad de código, la llamada a scriptlets embebidos en los JSP. Con esto último se promueve la reutilización de código a lo largo de la aplicación. Es preferible esta aproximación a embeber lo mismo en múltiples vistas.
 
-Típicamente, un controller se coordina con un componente despachador(dispatcher). Dicho dispatcher es responsable por la administración de vistas y navegación, es decir, escoge la siguiente vista para el usuario y dirige el control de recursos. Los dispatchers quizá están encapsulados dentro del controller directamente o puede ser extraído en un componente separado.
+Típicamente, un controller se coordina con un componente despachador (dispatcher). Dicho dispatcher es responsable por la administración de vistas y navegación, es decir, escoge la siguiente vista para el usuario y dirige el control de recursos. Los dispatchers quizá están encapsulados dentro del controller directamente o puede ser extraído en un componente separado.
 
 Mientras este patrón sugiere un manejo centralizado del manejo de todos los requests, no límita el número de manejadores en el sistema, tal como un Singleton. Una aplicación quizá use múltiples controllers en un sistema, cada uno mapeando a un conjunto distinto de servicios.
 

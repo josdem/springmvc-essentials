@@ -1,13 +1,13 @@
 
 # Arquitectura de las aplicaciones Spring MVC
 
-Spring Web MVC es un framework diseñado alrededor de un `DispatcherServlet` que atiende las solicitudes de los requests a los manejadores, con handler mappings configurables, resolución de vistas, localización, y resolución de temas, así como el soporte de upload de archivos. Desde Spring 2.5 y reforzado en 3.0, el manejador por default está basado en anotaciones como `@Controller` y `@RequestMapping`, ofreciendo un ampli rango de firmas de métodos. Adicionalmente, desde Spring 3, el uso de anotaciones como `@PathVariable` permiten crear sitios RESTful.
+Spring Web MVC es un framework diseñado alrededor de un `DispatcherServlet` que atiende las solicitudes de los requests a los manejadores, con handler mappings configurables, resolución de vistas, localización, y resolución de temas, así como el soporte de upload de archivos. Desde Spring 2.5 y reforzado en 3.0, el manejador por default está basado en anotaciones como `@Controller` y `@RequestMapping`, ofreciendo un amplio rango de firmas de métodos. Adicionalmente, desde Spring 3, el uso de anotaciones como `@PathVariable` permiten crear sitios RESTful.
 
 NOTE: SpringMVC esta basado en el principio: Open For extension, Close for modification.
 
-En SpringMVC se puede usar cualquier objeto como un _command_ o un _form-backing_ object; no se necesitan implementar interfaces específicas del framework o heredar de algo. El binding(atado) de datos es altamente flexible, Spring hace las conversiones y tratamientos de los tipos que conforman la estructura del objeto.
+En SpringMVC se puede usar cualquier objeto como un _command_ o un _form-backing_ object; no se necesitan implementar interfaces específicas del framework o heredar de algo. El binding (atado) de datos es altamente flexible, Spring hace las conversiones y tratamientos de los tipos que conforman la estructura del objeto.
 
-La resolución de vistas de Spring es extremadamente flexible. Un `Controller` es tipicamente responsable de preparar un modelo en un `Map` y seleccionando un nombre de vista, aunque se podría escribir directamente al flujo del response para completar el request. La resolución de vistas es muy configurable y flexible, ya sea a través de beans de Spring o los encabezados del request. Se puede integrar directamente con tecnologías como JSP, Velocity, Freemarker, o generar directamente XML y JSON, o bien, generar hojas de cálculo.
+La resolución de vistas de Spring es extremadamente flexible. Un `Controller` es típicamente responsable de preparar un modelo en un `Map` y seleccionando un nombre de vista, aunque se podría escribir directamente al flujo del response para completar el request. La resolución de vistas es muy configurable y flexible, ya sea a través de beans de Spring o los encabezados del request. Se puede integrar directamente con tecnologías como JSP, Velocity, Freemarker, o generar directamente XML y JSON, o bien, generar hojas de cálculo.
 
 ## Características de SpringMVC
 
@@ -18,7 +18,7 @@ La resolución de vistas de Spring es extremadamente flexible. Un `Controller` e
 * Binding personalizable en conjunto con validaciones
 * Manejadores de mapeos y resolución de vistas personalizables
 * Transferencia de modelos flexibles hacia las vistas
-* Internacionalización y resolución de temas personalizable, con soporte àra JSP’s con o sin las librerías de tags de Spring
+* Internacionalización y resolución de temas personalizable, con soporte para JSP’s con o sin las librerías de tags de Spring
 * Una librería de tags simple y poderosa que provee de características como data _binding_, temas, y generación de formularios mas fáciles de describir
 * Beans cuyo ciclo de vida está en el alcance del request actual HTTP o del objeto `Session`
 
@@ -97,7 +97,7 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 * Este archivo contiene todos los Beans de configuración del MVC
 * El `DispatcherServlet` cuenta con las siguientes propiedades:
 ** `contextClass` - Clase que implementa el WebAppCtx, usada por el Servlet. Default: XmlWebApplicationContext
-** `contextConfigLocation` - Indica donde se puede encontrar la configuración del Servle
+** `contextConfigLocation` - Indica donde se puede encontrar la configuración del Servlet
 ** `namespace` - Namespace del WebAppCtx. Default: {nombre-del-servlet}-servlet
 
 TIP: Te recomendamos profundizar en la documentación del Dispatcher Servlet de Spring, así conocerás de forma más detallada cuál es el alcance de la configuración que puedes hacer.
@@ -130,4 +130,4 @@ Los componentes de un `WebApplicationContext` son:
 
 image:images/lifecycle_request.png[]
 
-Te recomendamos que también veas la documentación del link:http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/context/support/AnnotationConfigWebApplicationContext.html[AnnotationConfigWebApplicationContext], podrás conocer otra forma de configurar una aplicación basada en anotaciones de Spring. Además de la interfaz link:http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html[WebApplicationInitializer] que tiene información de utilidad.
+TIP: Te recomendamos que también veas la documentación del link:http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/context/support/AnnotationConfigWebApplicationContext.html[AnnotationConfigWebApplicationContext], podrás conocer otra forma de configurar una aplicación basada en anotaciones de Spring. Además de la interfaz link:http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html[WebApplicationInitializer] que tiene información de utilidad.
